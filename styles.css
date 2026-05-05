@@ -574,3 +574,47 @@
     max-width: 120px;
   }
 }
+
+
+/* Quality pass: clearer empty states, safer privacy, cleaner settings */
+.empty-state {
+  background: var(--card-soft);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  color: var(--muted);
+}
+
+.empty-state strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.danger-zone {
+  border-color: rgba(155,44,44,.18);
+}
+
+.danger-zone > summary::after {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.privacy-on .sensitive {
+  filter: blur(8px);
+}
+
+.privacy-on .sensitive::placeholder {
+  color: transparent;
+}
+
+@media (max-width: 520px) {
+  .empty-state {
+    padding: 12px;
+  }
+}

@@ -194,6 +194,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
           data
         };
         localStorage.setItem(key, JSON.stringify(backup));
+        state.lastBackupAt = backup.createdAt;
         cleanupOldBackups();
         return key;
       } catch {
@@ -410,7 +411,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       const items = Object.entries(state.reflections).sort((a,b) => b[0].localeCompare(a[0])).slice(0, 6);
       document.getElementById('recentNotes').innerHTML = items.length ? items.map(([date, r]) => `
         <div class="list-item"><strong>${escapeHtml(r.mood || 'Reflection')}</strong><small>${date}</small><p>${escapeHtml(r.note || 'No note added.')}</p></div>
-      `).join('') : '<p class="subtitle">No private notes yet.</p>';
+      `).join('') : '<div class="empty-state"><strong>No private notes yet.</strong><p>Your mood notes will appear here after check-ins.</p></div>';
     }
 
     function renderTriggerButtons() {
@@ -437,7 +438,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
             <div class="item-actions"><button class="ghost-btn" data-delete-urge="${index}" type="button">Delete</button></div>
           </div>
         `;
-      }).join('') : '<p class="list-empty">No saved urges yet.</p>';
+      }).join('') : '<div class="empty-state"><strong>No saved urges yet.</strong><p>That can be a good sign. If an urge comes, write it in Help instead of sending.</p></div>';
     }
 
     function renderLetters() {
@@ -455,7 +456,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
             <div class="item-actions"><button class="ghost-btn" data-delete-letter="${escapeHtml(letter.id)}" type="button">Delete</button></div>
           </div>
         `;
-      }).join('') : '<p class="list-empty">No private letters saved yet.</p>';
+      }).join('') : '<div class="empty-state"><strong>No private letters yet.</strong><p>When thoughts feel heavy, write them here instead of sending.</p></div>';
     }
 
     function renderGroundingStep() {
@@ -805,7 +806,7 @@ ${message}`;
     }
 
     function openEmergency() {
-      document.getElementById('reasonsPreview').textContent = state.reasons || 'No reasons saved yet. You can add them in the Emergency tab.';
+      document.getElementById('reasonsPreview').textContent = state.reasons || 'No reasons saved yet. Add one or two gentle reasons in Help so they are ready during an urge.';
       document.getElementById('emergencyModal').classList.add('open');
     }
 
@@ -891,6 +892,7 @@ ${message}`;
       a.download = `no-contact-backup-${todayKey()}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
+      showToast('Backup exported');
     }
 
     function importData(file) {
@@ -1197,8 +1199,8 @@ function renderProgressInsights() {
     ['Most common mood', getMostCommonValue(moodValues)],
     ['Most common trigger', getMostCommonTrigger()],
     ['Hardest day', getHardestDayOfWeek()],
-    ['Avg. urge intensity', getAverageUrgeIntensity()],
-    ['Saved-not-sent', String((state.unsentMessages || []).length)],
+    ['Average urge', getAverageUrgeIntensity()],
+    ['Saved instead of sent', String((state.unsentMessages || []).length)],
     ['Boundary wins', String(checkedBoundaries)]
   ];
 
@@ -1225,7 +1227,7 @@ function renderSafePeople() {
         <button class="ghost-btn" type="button" data-delete-safe-person="${index}">Remove</button>
       </div>
     `).join('')
-    : '<p class="subtitle">No safe people added yet.</p>';
+    : '<div class="empty-state"><strong>No safe people added yet.</strong><p>Add one person you can contact before contacting them.</p></div>';
 
   if (list) list.innerHTML = html;
   if (preview) {
@@ -1236,7 +1238,7 @@ function renderSafePeople() {
           <small>${safeText(person.contact)}</small>
         </div>
       `).join('')
-      : '<p class="subtitle">No safe people saved yet. Add one in the Emergency tab.</p>';
+      : '<div class="empty-state"><strong>No safe person saved yet.</strong><p>Add one in Help so you have another choice during an urge.</p></div>';
   }
 }
 
@@ -1246,7 +1248,7 @@ function renderContactCost() {
   const preview = document.getElementById('contactCostPreview');
   if (text) text.value = state.contactCost || '';
   if (preview) {
-    preview.textContent = state.contactCost || 'No contact cost reminder saved yet. You can add one in the Emergency tab.';
+    preview.textContent = state.contactCost || 'No reminder saved yet. Add what usually happens after contact so your future self can read it during an urge.';
     preview.classList.add('sensitive');
   }
 }
@@ -1435,13 +1437,11 @@ function renderPolishHelpers() {
   const lastBackupStatus = document.getElementById('lastBackupStatus');
   if (lastBackupStatus) {
     const keys = getBackupKeys();
-    if (!keys.length) {
-      lastBackupStatus.textContent = 'No backup yet';
-    } else {
-      const latestDate = keys[keys.length - 1].replace(BACKUP_PREFIX, '');
-      const parsed = new Date(latestDate);
-      lastBackupStatus.textContent = Number.isNaN(parsed.getTime()) ? 'Backup found' : parsed.toLocaleDateString();
-    }
+    const latestDate = state.lastBackupAt || (keys.length ? keys[keys.length - 1].replace(BACKUP_PREFIX, '') : '');
+    const parsed = latestDate ? new Date(latestDate) : null;
+    lastBackupStatus.textContent = parsed && !Number.isNaN(parsed.getTime())
+      ? parsed.toLocaleDateString()
+      : 'No backup yet';
   }
 }
 

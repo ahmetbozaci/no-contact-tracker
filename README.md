@@ -117,3 +117,13 @@ Technical terms remain in code and README where useful for development.
 The browser reminder/alarm UI was removed because website notifications are not reliable enough to behave like a real phone alarm, especially on mobile browsers.
 For reliable reminders, users should set a normal phone alarm outside the app.
 Existing saved reminder fields are left harmlessly in saved data for compatibility.
+
+
+## Quality and consistency pass
+No new feature category was added. This pass improves existing areas:
+- Friendlier empty states for notes, urges, letters, and safe people.
+- More consistent privacy masking for sensitive text areas and private records.
+- Settings backup tools are separated from reset actions.
+- Reset actions are grouped in a safer Danger/Reset area.
+- Backup/export feedback is clearer.
+- Existing storage key and saved progress compatibility are preserved.

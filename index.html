@@ -170,7 +170,7 @@
 </div>
 <div class="card">
 <h2>Reasons I started</h2>
-<textarea id="reasonsText" placeholder="Write why you chose no-contact…"></textarea>
+<textarea class="sensitive" id="reasonsText" placeholder="Write why you chose no-contact…"></textarea>
 <div class="actions"><button class="soft-btn" id="saveReasonsBtn" type="button">Save reasons</button></div>
 </div>
 </div>
@@ -185,7 +185,7 @@
 <div class="soft-card">
 <h2>Contact cost reminder</h2>
 <p class="subtitle">Write what usually happens after contact, so Emergency mode can remind you before the urge takes over.</p>
-<textarea id="contactCostText" placeholder="Example: I wait for replies, lose sleep, feel anxious again…"></textarea>
+<textarea class="sensitive" id="contactCostText" placeholder="Example: I wait for replies, lose sleep, feel anxious again…"></textarea>
 <div class="actions"><button class="soft-btn" id="saveContactCostBtn" type="button">Save reminder</button></div>
 </div>
 <div class="soft-card">
@@ -211,8 +211,8 @@
 </summary>
 <p class="subtitle">If you contacted them, checked their profile, or replied, this is not shame. It is information.</p>
 <div class="form-row">
-<textarea id="relapseWhat" placeholder="What happened?"></textarea>
-<input id="relapseTrigger" placeholder="What triggered it? Example: loneliness, their photo, night time…" type="text"/>
+<textarea class="sensitive" id="relapseWhat" placeholder="What happened?"></textarea>
+<input class="sensitive" id="relapseTrigger" placeholder="What triggered it? Example: loneliness, their photo, night time…" type="text"/>
 <button class="danger-btn" id="saveRelapseBtn" type="button">Save what happened and restart gently</button>
 </div>
 <div class="success hidden" id="relapseMessage" style="margin-top:12px">You are not back to zero. You are learning your pattern.</div>
@@ -359,21 +359,32 @@
 <details class="card disclosure-card" open>
 <summary>
 <span>
-<strong>Backup and reset</strong>
-<small>Save, restore, or reset your backup</small>
+<strong>Backup</strong>
+<small>Save or restore your progress</small>
 </span>
 </summary>
 <div class="actions">
 <button class="soft-btn" id="exportBtn" type="button">Export backup</button>
 <label class="ghost-btn" for="importFile" style="cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Import backup</label>
 <input accept="application/json" class="hidden" id="importFile" type="file"/>
-<button class="ghost-btn" id="manualBackupBtn" type="button">Create backup</button>
+<button class="ghost-btn" id="manualBackupBtn" type="button">Create backup on this device</button>
 <button class="ghost-btn" id="restoreLatestBackupBtn" type="button">Restore latest backup</button>
+</div>
+<div id="backupNotice" class="notice hidden" style="margin-top:12px"></div>
+<div class="danger-note" style="margin-top:12px">Export a backup sometimes, especially if this progress matters to you. Browser or device changes can still remove saved progress.</div>
+</details>
+<details class="card disclosure-card danger-zone">
+<summary>
+<span>
+<strong>Reset options</strong>
+<small>Only use these when you are sure</small>
+</span>
+</summary>
+<p class="subtitle">These actions change your saved progress on this device. A local backup is created first when possible.</p>
+<div class="actions">
 <button class="ghost-btn" id="clearTodayBtn" type="button">Clear today only</button>
 <button class="danger-btn" id="resetAllBtn" type="button">Reset all progress</button>
 </div>
-<div id="backupNotice" class="notice hidden" style="margin-top:12px"></div>
-<div class="danger-note" style="margin-top:12px">A local backup is saved before major changes. Export a backup sometimes too, because browser or device changes can still remove saved progress.</div>
 </details>
 </div>
 </section>
@@ -433,7 +444,7 @@
 <div class="moods trigger-buttons" id="triggerButtons"></div>
 <input id="customTrigger" maxlength="80" placeholder="Custom trigger, optional" type="text" style="margin-top:10px"/>
 </div>
-<textarea id="unsentMessage" placeholder="Write the message here, but don’t send it…"></textarea>
+<textarea class="sensitive" id="unsentMessage" placeholder="Write the message here, but don’t send it…"></textarea>
 <button class="soft-btn" id="saveUnsentBtn" type="button">Save instead of sending</button>
 </div>
 </div>
