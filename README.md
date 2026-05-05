@@ -64,11 +64,12 @@ The Today plan and Social media boundaries blocks are intentionally placed insid
 Do not place those blocks between sections; anything outside `.section` will remain visible across every tab.
 
 
-## Code cleanup pass
-This version keeps the same UI and localStorage data, but the code was cleaned for maintainability:
-- Daily boundary tools are inside the Today tab only.
-- The newer feature state is part of the normal default/migration/normalization flow.
-- The previous appended render patch was removed.
-- App initialization now happens once through `initApp()`.
-- IDs were checked for duplicates.
-- JavaScript syntax was checked with `node --check`.
+## Working cleanup fix
+This package is rebuilt from the last known working version after a cleanup attempt moved code before `state` was initialized.
+Safe cleanup in this version:
+- Keeps `STORAGE_KEY = 'ncc_local_v1'`.
+- Keeps the existing working render flow.
+- Adds missing button types.
+- Keeps Today plan and Social media boundaries inside the Today tab.
+- JavaScript syntax checked with `node --check`.
+- Duplicate IDs checked.
