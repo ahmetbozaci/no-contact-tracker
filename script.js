@@ -21,6 +21,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     let timerSeconds = 20 * 60;
     let timerInterval = null;
     let reminderInterval = null;
+    let latestShareImageDataUrl = '';
 
     function defaultState() {
       return {
@@ -283,7 +284,10 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === tab));
       document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (tab === 'share') renderShareText();
+      if (tab === 'share') {
+        renderShareText();
+        renderShareImage();
+      }
     }
 
     function render() {
@@ -318,6 +322,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       renderMilestones();
       renderRecentNotes();
       renderShareText();
+      renderShareImage();
       updateReminderLoop();
     }
 
@@ -368,12 +373,262 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       `).join('') : '<p class="subtitle">No private notes yet.</p>';
     }
 
-    function renderShareText() {
-      if (!state.username) return;
+    function getShareData() {
       const stats = getStats();
       const mood = state.reflections[todayKey()]?.mood || 'Not added';
-      const text = `🌿 No Contact Challenge Update\n✅ Current streak: ${stats.current} day${stats.current === 1 ? '' : 's'}\n📅 Total no-contact days: ${stats.total}\n🏆 Longest streak: ${stats.longest} day${stats.longest === 1 ? '' : 's'}\n💭 Today’s mood: ${mood}\n\nI’m choosing peace today.`;
+      return {
+        username: state.username || 'Private User',
+        stats,
+        mood,
+        dateLabel: new Date().toLocaleDateString(undefined, {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        }),
+        message: 'I’m choosing peace today.'
+      };
+    }
+
+    function renderShareText() {
+      if (!state.username) return;
+      const { stats, mood, message } = getShareData();
+      const text = `🌿 No Contact Challenge Update
+✅ Current streak: ${stats.current} day${stats.current === 1 ? '' : 's'}
+📅 Total no-contact days: ${stats.total}
+🏆 Longest streak: ${stats.longest} day${stats.longest === 1 ? '' : 's'}
+💭 Today’s mood: ${mood}
+
+${message}`;
       document.getElementById('shareText').textContent = text;
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const words = String(text || '').split(/\s+/).filter(Boolean);
+      if (!words.length) return [''];
+      const lines = [];
+      let line = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const testLine = `${line} ${words[i]}`;
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          line = testLine;
+        } else {
+          lines.push(line);
+          line = words[i];
+        }
+      }
+
+      lines.push(line);
+      return lines;
+    }
+
+    function drawCanvasMultilineText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const lines = wrapCanvasText(ctx, text, maxWidth).slice(0, maxLines);
+      lines.forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+      return lines.length;
+    }
+
+    function renderShareImage() {
+      const preview = document.getElementById('shareImagePreview');
+      if (!preview || !state.username) return;
+
+      const { username, stats, mood, dateLabel, message } = getShareData();
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#f5f0e8';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const gradientA = ctx.createRadialGradient(130, 120, 0, 130, 120, 420);
+      gradientA.addColorStop(0, 'rgba(99,153,34,0.14)');
+      gradientA.addColorStop(1, 'rgba(99,153,34,0)');
+      ctx.fillStyle = gradientA;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const gradientB = ctx.createRadialGradient(930, 80, 0, 930, 80, 360);
+      gradientB.addColorStop(0, 'rgba(24,95,165,0.10)');
+      gradientB.addColorStop(1, 'rgba(24,95,165,0)');
+      ctx.fillStyle = gradientB;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cardX = 72;
+      const cardY = 78;
+      const cardW = canvas.width - 144;
+      const cardH = canvas.height - 156;
+      ctx.save();
+      ctx.shadowColor = 'rgba(44,44,42,0.08)';
+      ctx.shadowBlur = 36;
+      ctx.shadowOffsetY = 16;
+      roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      roundedRect(ctx, cardX + 44, cardY + 44, 320, 56, 28);
+      ctx.fillStyle = '#eaf3de';
+      ctx.fill();
+      ctx.translate(cardX + 84, cardY + 73);
+      ctx.rotate(-Math.PI / 4);
+      roundedRect(ctx, -12, -12, 24, 24, 10);
+      ctx.fillStyle = '#3b6d11';
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#3b6d11';
+      ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('No Contact Challenge', cardX + 116, cardY + 79);
+
+      ctx.fillStyle = '#77746d';
+      ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText(dateLabel, cardX + cardW - 250, cardY + 79);
+
+      ctx.fillStyle = '#2c2c2a';
+      ctx.font = '700 64px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      drawCanvasMultilineText(ctx, `Progress update for ${username}`, cardX + 48, cardY + 168, cardW - 96, 74, 2);
+
+      ctx.fillStyle = '#77746d';
+      ctx.font = '500 29px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      drawCanvasMultilineText(ctx, 'A gentle snapshot of today’s no-contact journey.', cardX + 48, cardY + 302, cardW - 96, 42, 2);
+
+      ctx.save();
+      roundedRect(ctx, cardX + 48, cardY + 372, cardW - 96, 250, 28);
+      ctx.fillStyle = '#f8fbf4';
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(59,109,17,0.10)';
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = '#3b6d11';
+      ctx.font = '800 30px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('Current streak', cardX + 88, cardY + 446);
+      ctx.fillStyle = '#2c2c2a';
+      ctx.font = '800 118px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText(String(stats.current), cardX + 84, cardY + 560);
+      ctx.fillStyle = '#77746d';
+      ctx.font = '600 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText(`day${stats.current === 1 ? '' : 's'} of choosing peace`, cardX + 250, cardY + 554);
+
+      const smallY = cardY + 658;
+      const gap = 22;
+      const smallW = (cardW - 96 - gap * 2) / 3;
+      const items = [
+        { label: 'Total days', value: String(stats.total), accent: '#eaf3de', color: '#3b6d11' },
+        { label: 'Longest streak', value: `${stats.longest}`, accent: '#e6f1fb', color: '#185fa5' },
+        { label: 'Today’s mood', value: mood, accent: '#faeeda', color: '#ba7517' }
+      ];
+
+      items.forEach((item, index) => {
+        const x = cardX + 48 + index * (smallW + gap);
+        ctx.save();
+        roundedRect(ctx, x, smallY, smallW, 180, 24);
+        ctx.fillStyle = item.accent;
+        ctx.fill();
+        ctx.restore();
+
+        ctx.fillStyle = item.color;
+        ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        ctx.fillText(item.label, x + 28, smallY + 48);
+        ctx.fillStyle = '#2c2c2a';
+        ctx.font = item.value.length > 12
+          ? '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
+          : '800 48px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        const valueLines = wrapCanvasText(ctx, item.value, smallW - 56).slice(0, 2);
+        valueLines.forEach((line, lineIndex) => {
+          ctx.fillText(line, x + 28, smallY + 104 + lineIndex * 42);
+        });
+      });
+
+      ctx.save();
+      roundedRect(ctx, cardX + 48, cardY + 884, cardW - 96, 190, 28);
+      ctx.fillStyle = '#fafaf7';
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#3b6d11';
+      ctx.font = '700 28px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('Today’s reminder', cardX + 80, cardY + 938);
+
+      ctx.fillStyle = '#2c2c2a';
+      ctx.font = '700 44px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      drawCanvasMultilineText(ctx, message, cardX + 80, cardY + 1006, cardW - 160, 58, 2);
+
+      ctx.fillStyle = '#77746d';
+      ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('Shared from my private local tracker', cardX + 80, cardY + cardH - 44);
+
+      latestShareImageDataUrl = canvas.toDataURL('image/png');
+      preview.src = latestShareImageDataUrl;
+    }
+
+    function downloadShareImage() {
+      if (!latestShareImageDataUrl) renderShareImage();
+      if (!latestShareImageDataUrl) return showToast('Could not create image');
+      const link = document.createElement('a');
+      link.href = latestShareImageDataUrl;
+      link.download = `no-contact-progress-${todayKey()}.png`;
+      link.click();
+      showToast('PNG downloaded');
+    }
+
+    function dataUrlToFile(dataUrl, fileName) {
+      const [meta, base64] = dataUrl.split(',');
+      const mimeMatch = meta.match(/data:(.*?);base64/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new File([bytes], fileName, { type: mime });
+    }
+
+    async function shareImage() {
+      if (!latestShareImageDataUrl) renderShareImage();
+      if (!latestShareImageDataUrl) return showToast('Could not create image');
+      const file = dataUrlToFile(latestShareImageDataUrl, `no-contact-progress-${todayKey()}.png`);
+
+      if (!navigator.share) {
+        downloadShareImage();
+        showToast('Image sharing is not available here, so the PNG was downloaded instead');
+        return;
+      }
+
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'No Contact Challenge Update',
+            text: 'I’m choosing peace today.'
+          });
+        } else {
+          await navigator.share({ text: document.getElementById('shareText').textContent });
+          showToast('This browser shared the text instead of the image');
+        }
+      } catch {
+        // User cancelled share or browser blocked it.
+      }
     }
 
     function doCheckin() {
@@ -579,7 +834,17 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     document.getElementById('urgeIntensity').addEventListener('input', e => document.getElementById('urgeIntensityValue').textContent = e.target.value);
     document.getElementById('copyShareBtn').addEventListener('click', copyShare);
     document.getElementById('nativeShareBtn').addEventListener('click', nativeShare);
-    document.getElementById('refreshShareBtn').addEventListener('click', renderShareText);
+    document.getElementById('refreshShareBtn').addEventListener('click', () => {
+      renderShareText();
+      renderShareImage();
+      showToast('Share content refreshed');
+    });
+    document.getElementById('downloadShareImageBtn').addEventListener('click', downloadShareImage);
+    document.getElementById('shareImageBtn').addEventListener('click', shareImage);
+    document.getElementById('refreshShareImageBtn').addEventListener('click', () => {
+      renderShareImage();
+      showToast('Share image refreshed');
+    });
     document.getElementById('saveNameBtn').addEventListener('click', () => {
       const name = document.getElementById('editName').value.trim();
       if (!name) return showToast('Name cannot be empty');

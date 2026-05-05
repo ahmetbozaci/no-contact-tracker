@@ -211,3 +211,32 @@
       .modal-backdrop { align-items: center; }
       .card { padding: 24px; }
     }
+
+
+.share-image-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.share-image-preview {
+  background:
+    radial-gradient(circle at top left, rgba(99,153,34,.08), transparent 18rem),
+    radial-gradient(circle at top right, rgba(24,95,165,.06), transparent 16rem),
+    var(--card-soft);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 14px;
+}
+
+.share-image-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 12px 28px rgba(44,44,42,.08);
+  background: white;
+}
