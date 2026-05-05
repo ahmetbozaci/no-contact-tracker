@@ -77,8 +77,15 @@
 </div>
 </div>
 <!-- Today-only daily boundary tools. Keep this block inside #today. -->
-<div class="grid-2">
-<div class="card">
+<details class="card disclosure-card" open>
+<summary>
+<span>
+<strong>Daily boundaries</strong>
+<small>Today plan and social media protection</small>
+</span>
+</summary>
+<div class="grid-2 nested-grid">
+<div class="soft-card">
 <h2>Today plan</h2>
 <p class="subtitle">Small boundaries for today. Customize the list from Settings.</p>
 <div class="today-plan-list" id="todayPlanList"></div>
@@ -86,12 +93,13 @@
 <button class="ghost-btn" id="resetTodayPlanBtn" type="button">Reset today</button>
 </div>
 </div>
-<div class="card">
+<div class="soft-card">
 <h2>Social media boundaries</h2>
 <p class="subtitle">No-contact also means protecting yourself from small checks that reopen the loop.</p>
 <div class="boundary-list" id="boundaryList"></div>
 </div>
 </div>
+</details>
 </section>
 
 
@@ -122,10 +130,15 @@
 </div>
 <div class="calendar" id="calendar"></div>
 </div>
-<div class="card">
-<h2>Recent private notes</h2>
-<div class="list" id="recentNotes"></div>
-</div>
+<details class="card disclosure-card">
+<summary>
+<span>
+<strong>Recent private notes</strong>
+<small>Review mood notes when you need context</small>
+</span>
+</summary>
+<div class="list sensitive" id="recentNotes"></div>
+</details>
 </div>
 </section>
 <section class="section" id="emergency">
@@ -142,14 +155,21 @@
 <div class="actions"><button class="soft-btn" id="saveReasonsBtn" type="button">Save reasons</button></div>
 </div>
 </div>
-<div class="grid-2">
-<div class="card">
+<details class="card disclosure-card" open>
+<summary>
+<span>
+<strong>Emergency preparation</strong>
+<small>Contact cost reminder and safe people</small>
+</span>
+</summary>
+<div class="grid-2 nested-grid">
+<div class="soft-card">
 <h2>Contact cost reminder</h2>
 <p class="subtitle">Write what usually happens after contact, so Emergency mode can remind you before the urge takes over.</p>
 <textarea id="contactCostText" placeholder="Example: I wait for replies, lose sleep, feel anxious again…"></textarea>
 <div class="actions"><button class="soft-btn" id="saveContactCostBtn" type="button">Save reminder</button></div>
 </div>
-<div class="card">
+<div class="soft-card">
 <h2>Safe people</h2>
 <p class="subtitle">People you can contact instead. Stored only on this device.</p>
 <div class="form-row">
@@ -158,12 +178,18 @@
 <input id="safePersonNote" type="text" placeholder="Why they are safe for me" />
 <button class="soft-btn" id="addSafePersonBtn" type="button">Add safe person</button>
 </div>
-<div class="list" id="safePeopleList" style="margin-top:14px"></div>
+<div class="list sensitive" id="safePeopleList" style="margin-top:14px"></div>
 </div>
 </div>
+</details>
 
-<div class="card">
-<h2>Relapse / reset support</h2>
+<details class="card disclosure-card">
+<summary>
+<span>
+<strong>Relapse / reset support</strong>
+<small>Use this gently if no-contact was broken</small>
+</span>
+</summary>
 <p class="subtitle">If you contacted them, checked their profile, or replied, this is not shame. It is information.</p>
 <div class="form-row">
 <textarea id="relapseWhat" placeholder="What happened?"></textarea>
@@ -171,23 +197,33 @@
 <button class="danger-btn" id="saveRelapseBtn" type="button">I broke no-contact — help me restart gently</button>
 </div>
 <div class="success hidden" id="relapseMessage" style="margin-top:12px">You are not back to zero. You are learning your pattern.</div>
-</div>
+</details>
 <div class="grid-2 feature-grid">
-<div class="card">
-<h2>Urge history</h2>
+<details class="card disclosure-card">
+<summary>
+<span>
+<strong>Urge history</strong>
+<small>Private record of saved-not-sent moments</small>
+</span>
+</summary>
 <p class="subtitle">A private record of urges you survived instead of sending.</p>
-<div class="list" id="urgeHistory"></div>
-</div>
-<div class="card">
-<h2>Letters I never send</h2>
+<div class="list sensitive" id="urgeHistory"></div>
+</details>
+<details class="card disclosure-card">
+<summary>
+<span>
+<strong>Letters I never send</strong>
+<small>Write, save, and release privately</small>
+</span>
+</summary>
 <p class="subtitle">Write what you need to release. Save it here, not in their messages.</p>
-<div class="form-row">
+<div class="form-row sensitive">
 <input id="letterTitle" maxlength="80" placeholder="Letter title, optional" type="text"/>
 <textarea id="letterBody" placeholder="Write the letter here…"></textarea>
 <button class="soft-btn" id="saveLetterBtn" type="button">Save letter privately</button>
 </div>
-<div class="list" id="letterList" style="margin-top:14px"></div>
-</div>
+<div class="list sensitive" id="letterList" style="margin-top:14px"></div>
+</details>
 </div>
 </section>
 <section class="section" id="share">
@@ -197,15 +233,20 @@
 <h1 class="title">Share as text or picture.</h1>
 <p class="subtitle">Generate a simple text update or a calm share card image for your Discord group.</p>
 </div>
-<div class="card">
-<h2>Progress message</h2>
+<details class="card disclosure-card" open>
+<summary>
+<span>
+<strong>Progress message</strong>
+<small>Copy a Discord-ready text update</small>
+</span>
+</summary>
 <div class="share-box" id="shareText"></div>
 <div class="actions">
 <button class="primary-btn" id="copyShareBtn" type="button">Copy text</button>
 <button class="soft-btn" id="nativeShareBtn" type="button">Native share</button>
 <button class="ghost-btn" id="refreshShareBtn" type="button">Refresh</button>
 </div>
-</div>
+</details>
 </div>
 <div class="card">
 <div class="share-image-header">
@@ -266,15 +307,20 @@
 </div>
 <div id="privacyNotice" class="notice hidden" style="margin-top:12px"></div>
 </div>
-<div class="card">
-<h2>Customize today plan</h2>
+<details class="card disclosure-card">
+<summary>
+<span>
+<strong>Customize today plan</strong>
+<small>Edit the checklist shown on Today</small>
+</span>
+</summary>
 <p class="subtitle">One item per line. These become your daily checklist.</p>
 <textarea id="todayPlanEditor" placeholder="Don’t check their profile&#10;Don’t message&#10;Take a walk"></textarea>
 <div class="actions">
 <button class="soft-btn" id="saveTodayPlanItemsBtn" type="button">Save checklist</button>
 <button class="ghost-btn" id="restoreDefaultPlanBtn" type="button">Restore defaults</button>
 </div>
-</div>
+</details>
 </div>
 
 <div class="grid-2">
@@ -288,8 +334,13 @@
 </div>
 <div class="notice hidden" id="reminderNotice" style="margin-top:12px"></div>
 </div>
-<div class="card">
-<h2>Data management</h2>
+<details class="card disclosure-card" open>
+<summary>
+<span>
+<strong>Data management</strong>
+<small>Export, import, backup, and reset</small>
+</span>
+</summary>
 <div class="actions">
 <button class="soft-btn" id="exportBtn" type="button">Export JSON</button>
 <label class="ghost-btn" for="importFile" style="cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Import JSON</label>
@@ -301,7 +352,7 @@
 </div>
 <div id="backupNotice" class="notice hidden" style="margin-top:12px"></div>
 <div class="danger-note" style="margin-top:12px">Automatic backups are saved before future data migrations. Export regularly too, because browser/device changes can still clear localStorage.</div>
-</div>
+</details>
 </div>
 </section>
 </main>

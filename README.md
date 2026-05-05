@@ -73,3 +73,12 @@ Safe cleanup in this version:
 - Keeps Today plan and Social media boundaries inside the Today tab.
 - JavaScript syntax checked with `node --check`.
 - Duplicate IDs checked.
+
+
+## UX organization pass
+The app now keeps the same features but groups advanced/private tools with native `<details>` sections:
+- Today remains focused on check-in, focus, affirmation, and daily boundaries.
+- Emergency remains action-first, with preparation, relapse support, urge history, and letters grouped clearly.
+- Progress keeps insights and calendar visible while private notes are collapsible.
+- Settings keeps essential controls visible and advanced customization/data tools organized.
+No storage keys or saved data formats were removed.
