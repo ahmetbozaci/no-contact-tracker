@@ -240,3 +240,14 @@
   box-shadow: 0 12px 28px rgba(44,44,42,.08);
   background: white;
 }
+
+
+.feature-grid { margin-top: 14px; }
+.compact-controls { margin: 0 0 14px; }
+.trigger-buttons .mood-btn.active { background: var(--amber-soft); border-color: rgba(186,117,23,.25); color: var(--amber); }
+.list-empty { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+.item-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.item-actions button { padding: 8px 10px; border-radius: 12px; font-size: 12px; }
+.meta-line { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.grounding-card { background: linear-gradient(180deg, var(--card-soft), #fff); }
+.letter-body-preview { white-space: pre-wrap; color: var(--muted); margin: 8px 0 0; font-size: 14px; }

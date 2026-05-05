@@ -1,9 +1,17 @@
 const STORAGE_KEY = 'ncc_local_v1';
-const APP_SCHEMA_VERSION = 2;
+const APP_SCHEMA_VERSION = 3;
 const BACKUP_PREFIX = 'ncc_local_backup_';
 const MAX_AUTO_BACKUPS = 5;
 const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     const moods = ['Calm', 'Strong', 'Sad', 'Anxious', 'Tempted', 'Hopeful'];
+    const triggerOptions = ['Loneliness', 'Night time', 'Their photo', 'Social media', 'Music', 'Boredom', 'Anxiety', 'Dream', 'Alcohol', 'Memory'];
+    const groundingSteps = [
+      'Name 5 things you can see. Then breathe slowly.',
+      'Name 4 things you can feel: your feet, your chair, your clothes, the air.',
+      'Name 3 things you can hear. Let the urge be background noise.',
+      'Name 2 things you can smell. Relax your jaw and shoulders.',
+      'Name 1 kind thing you can do for yourself in the next 5 minutes.'
+    ];
     const milestones = [1, 3, 7, 14, 30, 60, 90];
     const quotes = [
       'You do not need to reopen the wound to prove it hurt.',
@@ -22,6 +30,8 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     let timerInterval = null;
     let reminderInterval = null;
     let latestShareImageDataUrl = '';
+    let selectedUrgeTriggers = new Set();
+    let groundingStepIndex = 0;
 
     function defaultState() {
       return {
@@ -35,6 +45,9 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         reasons: '',
         unsentMessages: [],
         relapses: [],
+        letters: [],
+        shareImageTemplate: 'soft',
+        shareImageSize: 'portrait',
         reminderTime: '',
         reminderLastShown: ''
       };
@@ -91,6 +104,16 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
           : [];
       }
 
+      // v3: add trigger tracking, private letters, and share image preferences.
+      if (incomingVersion < 3) {
+        nextState.letters = Array.isArray(nextState.letters) ? nextState.letters : [];
+        nextState.shareImageTemplate = nextState.shareImageTemplate || 'soft';
+        nextState.shareImageSize = nextState.shareImageSize || 'portrait';
+        nextState.unsentMessages = Array.isArray(nextState.unsentMessages)
+          ? nextState.unsentMessages.map(item => ({ ...item, triggers: Array.isArray(item?.triggers) ? item.triggers : [] }))
+          : [];
+      }
+
       return normalizeState(nextState);
     }
 
@@ -122,6 +145,8 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         ? merged.unsentMessages.filter(item => item && typeof item === 'object').map(item => ({
             text: typeof item.text === 'string' ? item.text : '',
             intensity: Number(item.intensity) || 5,
+            triggers: Array.isArray(item.triggers) ? item.triggers.filter(Boolean).map(String) : [],
+            customTrigger: typeof item.customTrigger === 'string' ? item.customTrigger : '',
             date: typeof item.date === 'string' ? item.date : new Date().toISOString()
           }))
         : [];
@@ -134,6 +159,18 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
             date: typeof item.date === 'string' ? item.date : new Date().toISOString()
           }))
         : [];
+
+      merged.letters = Array.isArray(merged.letters)
+        ? merged.letters.filter(item => item && typeof item === 'object').map(item => ({
+            id: typeof item.id === 'string' ? item.id : `letter-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            title: typeof item.title === 'string' ? item.title : '',
+            body: typeof item.body === 'string' ? item.body : '',
+            date: typeof item.date === 'string' ? item.date : new Date().toISOString()
+          }))
+        : [];
+
+      merged.shareImageTemplate = ['soft', 'minimal', 'dark'].includes(merged.shareImageTemplate) ? merged.shareImageTemplate : 'soft';
+      merged.shareImageSize = ['portrait', 'story', 'square'].includes(merged.shareImageSize) ? merged.shareImageSize : 'portrait';
 
       return merged;
     }
@@ -303,6 +340,8 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       document.getElementById('editName').value = state.username;
       document.getElementById('reasonsText').value = state.reasons || '';
       document.getElementById('reminderTime').value = state.reminderTime || '';
+      document.getElementById('shareImageTemplate').value = state.shareImageTemplate || 'soft';
+      document.getElementById('shareImageSize').value = state.shareImageSize || 'portrait';
 
       const btn = document.getElementById('checkinBtn');
       btn.classList.toggle('done', stats.checkedToday);
@@ -323,6 +362,10 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       renderRecentNotes();
       renderShareText();
       renderShareImage();
+      renderTriggerButtons();
+      renderUrgeHistory();
+      renderLetters();
+      renderGroundingStep();
       updateReminderLoop();
     }
 
@@ -371,6 +414,75 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       document.getElementById('recentNotes').innerHTML = items.length ? items.map(([date, r]) => `
         <div class="list-item"><strong>${escapeHtml(r.mood || 'Reflection')}</strong><small>${date}</small><p>${escapeHtml(r.note || 'No note added.')}</p></div>
       `).join('') : '<p class="subtitle">No private notes yet.</p>';
+    }
+
+    function renderTriggerButtons() {
+      const container = document.getElementById('triggerButtons');
+      if (!container) return;
+      container.innerHTML = triggerOptions.map(trigger => `
+        <button type="button" class="mood-btn ${selectedUrgeTriggers.has(trigger) ? 'active' : ''}" data-trigger="${escapeHtml(trigger)}">${escapeHtml(trigger)}</button>
+      `).join('');
+    }
+
+    function renderUrgeHistory() {
+      const container = document.getElementById('urgeHistory');
+      if (!container) return;
+      const items = state.unsentMessages.slice(0, 6);
+      container.innerHTML = items.length ? items.map((item, index) => {
+        const triggerText = [...(item.triggers || []), item.customTrigger].filter(Boolean).join(', ') || 'No trigger saved';
+        const preview = item.text.length > 110 ? `${item.text.slice(0, 110)}…` : item.text;
+        return `
+          <div class="list-item">
+            <strong>Intensity ${escapeHtml(item.intensity)}/10</strong>
+            <div class="meta-line">${escapeHtml(new Date(item.date).toLocaleString())}</div>
+            <div class="meta-line">Trigger: ${escapeHtml(triggerText)}</div>
+            <p class="letter-body-preview">${escapeHtml(preview)}</p>
+            <div class="item-actions"><button class="ghost-btn" data-delete-urge="${index}" type="button">Delete</button></div>
+          </div>
+        `;
+      }).join('') : '<p class="list-empty">No saved urges yet.</p>';
+    }
+
+    function renderLetters() {
+      const container = document.getElementById('letterList');
+      if (!container) return;
+      const items = state.letters.slice(0, 6);
+      container.innerHTML = items.length ? items.map(letter => {
+        const title = letter.title || 'Untitled letter';
+        const preview = letter.body.length > 130 ? `${letter.body.slice(0, 130)}…` : letter.body;
+        return `
+          <div class="list-item">
+            <strong>${escapeHtml(title)}</strong>
+            <div class="meta-line">${escapeHtml(new Date(letter.date).toLocaleString())}</div>
+            <p class="letter-body-preview">${escapeHtml(preview)}</p>
+            <div class="item-actions"><button class="ghost-btn" data-delete-letter="${escapeHtml(letter.id)}" type="button">Delete</button></div>
+          </div>
+        `;
+      }).join('') : '<p class="list-empty">No private letters saved yet.</p>';
+    }
+
+    function renderGroundingStep() {
+      const el = document.getElementById('groundingText');
+      if (!el) return;
+      el.textContent = groundingSteps[groundingStepIndex % groundingSteps.length];
+    }
+
+    function saveLetter() {
+      const titleEl = document.getElementById('letterTitle');
+      const bodyEl = document.getElementById('letterBody');
+      const body = bodyEl.value.trim();
+      if (!body) return showToast('Write the letter first');
+
+      state.letters.unshift({
+        id: `letter-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        title: titleEl.value.trim(),
+        body,
+        date: new Date().toISOString()
+      });
+      titleEl.value = '';
+      bodyEl.value = '';
+      saveState();
+      showToast('Letter saved privately');
     }
 
     function getShareData() {
@@ -439,104 +551,136 @@ ${message}`;
       return lines.length;
     }
 
+    function getShareCanvasSize() {
+      const size = state.shareImageSize || 'portrait';
+      if (size === 'story') return { width: 1080, height: 1920, label: 'story' };
+      if (size === 'square') return { width: 1080, height: 1080, label: 'square' };
+      return { width: 1080, height: 1350, label: 'portrait' };
+    }
+
+    function getShareTheme() {
+      const template = state.shareImageTemplate || 'soft';
+      if (template === 'dark') {
+        return {
+          bg: '#20231d', card: 'rgba(43,48,38,0.96)', cardSoft: '#313a2a', text: '#f5f0e8', muted: '#c9c3b8',
+          green: '#9fce68', greenSoft: '#334729', blueSoft: '#26384a', amberSoft: '#4b3926', amber: '#e2a95a', border: 'rgba(255,255,255,0.10)', shadow: 'rgba(0,0,0,0.26)'
+        };
+      }
+      if (template === 'minimal') {
+        return {
+          bg: '#faf7ef', card: '#ffffff', cardSoft: '#fbfaf6', text: '#2c2c2a', muted: '#77746d',
+          green: '#3b6d11', greenSoft: '#f2f7ea', blueSoft: '#edf5fb', amberSoft: '#fbf3e6', amber: '#ba7517', border: 'rgba(0,0,0,0.07)', shadow: 'rgba(44,44,42,0.06)'
+        };
+      }
+      return {
+        bg: '#f5f0e8', card: 'rgba(255,255,255,0.95)', cardSoft: '#fafaf7', text: '#2c2c2a', muted: '#77746d',
+        green: '#3b6d11', greenSoft: '#eaf3de', blueSoft: '#e6f1fb', amberSoft: '#faeeda', amber: '#ba7517', border: 'rgba(0,0,0,0.06)', shadow: 'rgba(44,44,42,0.08)'
+      };
+    }
+
     function renderShareImage() {
       const preview = document.getElementById('shareImagePreview');
       if (!preview || !state.username) return;
 
       const { username, stats, mood, dateLabel, message } = getShareData();
+      const { width, height, label } = getShareCanvasSize();
+      const theme = getShareTheme();
       const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1350;
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#f5f0e8';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = theme.bg;
+      ctx.fillRect(0, 0, width, height);
 
-      const gradientA = ctx.createRadialGradient(130, 120, 0, 130, 120, 420);
-      gradientA.addColorStop(0, 'rgba(99,153,34,0.14)');
-      gradientA.addColorStop(1, 'rgba(99,153,34,0)');
-      ctx.fillStyle = gradientA;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (state.shareImageTemplate !== 'minimal') {
+        const gradientA = ctx.createRadialGradient(130, 120, 0, 130, 120, 420);
+        gradientA.addColorStop(0, state.shareImageTemplate === 'dark' ? 'rgba(159,206,104,0.16)' : 'rgba(99,153,34,0.14)');
+        gradientA.addColorStop(1, 'rgba(99,153,34,0)');
+        ctx.fillStyle = gradientA;
+        ctx.fillRect(0, 0, width, height);
 
-      const gradientB = ctx.createRadialGradient(930, 80, 0, 930, 80, 360);
-      gradientB.addColorStop(0, 'rgba(24,95,165,0.10)');
-      gradientB.addColorStop(1, 'rgba(24,95,165,0)');
-      ctx.fillStyle = gradientB;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const gradientB = ctx.createRadialGradient(width - 150, 80, 0, width - 150, 80, 360);
+        gradientB.addColorStop(0, state.shareImageTemplate === 'dark' ? 'rgba(80,128,170,0.12)' : 'rgba(24,95,165,0.10)');
+        gradientB.addColorStop(1, 'rgba(24,95,165,0)');
+        ctx.fillStyle = gradientB;
+        ctx.fillRect(0, 0, width, height);
+      }
 
       const cardX = 72;
-      const cardY = 78;
-      const cardW = canvas.width - 144;
-      const cardH = canvas.height - 156;
+      const cardY = label === 'story' ? 126 : 78;
+      const cardW = width - 144;
+      const cardH = height - cardY * 2;
       ctx.save();
-      ctx.shadowColor = 'rgba(44,44,42,0.08)';
+      ctx.shadowColor = theme.shadow;
       ctx.shadowBlur = 36;
       ctx.shadowOffsetY = 16;
       roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
-      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.fillStyle = theme.card;
       ctx.fill();
       ctx.restore();
 
       ctx.save();
       roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+      ctx.strokeStyle = theme.border;
       ctx.stroke();
       ctx.restore();
 
       ctx.save();
       roundedRect(ctx, cardX + 44, cardY + 44, 320, 56, 28);
-      ctx.fillStyle = '#eaf3de';
+      ctx.fillStyle = theme.greenSoft;
       ctx.fill();
       ctx.translate(cardX + 84, cardY + 73);
       ctx.rotate(-Math.PI / 4);
       roundedRect(ctx, -12, -12, 24, 24, 10);
-      ctx.fillStyle = '#3b6d11';
+      ctx.fillStyle = theme.green;
       ctx.fill();
       ctx.restore();
 
-      ctx.fillStyle = '#3b6d11';
+      ctx.fillStyle = theme.green;
       ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
       ctx.fillText('No Contact Challenge', cardX + 116, cardY + 79);
 
-      ctx.fillStyle = '#77746d';
+      ctx.fillStyle = theme.muted;
       ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
       ctx.fillText(dateLabel, cardX + cardW - 250, cardY + 79);
 
-      ctx.fillStyle = '#2c2c2a';
+      ctx.fillStyle = theme.text;
       ctx.font = '700 64px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
       drawCanvasMultilineText(ctx, `Progress update for ${username}`, cardX + 48, cardY + 168, cardW - 96, 74, 2);
 
-      ctx.fillStyle = '#77746d';
+      ctx.fillStyle = theme.muted;
       ctx.font = '500 29px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
       drawCanvasMultilineText(ctx, 'A gentle snapshot of today’s no-contact journey.', cardX + 48, cardY + 302, cardW - 96, 42, 2);
 
+      const streakY = cardY + 372;
       ctx.save();
-      roundedRect(ctx, cardX + 48, cardY + 372, cardW - 96, 250, 28);
-      ctx.fillStyle = '#f8fbf4';
+      roundedRect(ctx, cardX + 48, streakY, cardW - 96, 250, 28);
+      ctx.fillStyle = theme.cardSoft;
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(59,109,17,0.10)';
+      ctx.strokeStyle = theme.border;
       ctx.stroke();
       ctx.restore();
 
-      ctx.fillStyle = '#3b6d11';
+      ctx.fillStyle = theme.green;
       ctx.font = '800 30px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText('Current streak', cardX + 88, cardY + 446);
-      ctx.fillStyle = '#2c2c2a';
+      ctx.fillText('Current streak', cardX + 88, streakY + 74);
+      ctx.fillStyle = theme.text;
       ctx.font = '800 118px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText(String(stats.current), cardX + 84, cardY + 560);
-      ctx.fillStyle = '#77746d';
+      ctx.fillText(String(stats.current), cardX + 84, streakY + 188);
+      ctx.fillStyle = theme.muted;
       ctx.font = '600 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText(`day${stats.current === 1 ? '' : 's'} of choosing peace`, cardX + 250, cardY + 554);
+      ctx.fillText(`day${stats.current === 1 ? '' : 's'} of choosing peace`, cardX + 250, streakY + 182);
 
-      const smallY = cardY + 658;
+      const smallY = streakY + 286;
       const gap = 22;
       const smallW = (cardW - 96 - gap * 2) / 3;
       const items = [
-        { label: 'Total days', value: String(stats.total), accent: '#eaf3de', color: '#3b6d11' },
-        { label: 'Longest streak', value: `${stats.longest}`, accent: '#e6f1fb', color: '#185fa5' },
-        { label: 'Today’s mood', value: mood, accent: '#faeeda', color: '#ba7517' }
+        { label: 'Total days', value: String(stats.total), accent: theme.greenSoft, color: theme.green },
+        { label: 'Longest streak', value: `${stats.longest}`, accent: theme.blueSoft, color: state.shareImageTemplate === 'dark' ? '#8bb8e8' : '#185fa5' },
+        { label: 'Today’s mood', value: mood, accent: theme.amberSoft, color: theme.amber }
       ];
 
       items.forEach((item, index) => {
@@ -550,7 +694,7 @@ ${message}`;
         ctx.fillStyle = item.color;
         ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
         ctx.fillText(item.label, x + 28, smallY + 48);
-        ctx.fillStyle = '#2c2c2a';
+        ctx.fillStyle = theme.text;
         ctx.font = item.value.length > 12
           ? '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
           : '800 48px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
@@ -560,21 +704,34 @@ ${message}`;
         });
       });
 
-      ctx.save();
-      roundedRect(ctx, cardX + 48, cardY + 884, cardW - 96, 190, 28);
-      ctx.fillStyle = '#fafaf7';
-      ctx.fill();
-      ctx.restore();
+      const messageY = smallY + 226;
+      if (label !== 'square') {
+        ctx.save();
+        roundedRect(ctx, cardX + 48, messageY, cardW - 96, 190, 28);
+        ctx.fillStyle = theme.cardSoft;
+        ctx.fill();
+        ctx.restore();
 
-      ctx.fillStyle = '#3b6d11';
-      ctx.font = '700 28px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText('Today’s reminder', cardX + 80, cardY + 938);
+        ctx.fillStyle = theme.green;
+        ctx.font = '700 28px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        ctx.fillText('Today’s reminder', cardX + 80, messageY + 54);
 
-      ctx.fillStyle = '#2c2c2a';
-      ctx.font = '700 44px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      drawCanvasMultilineText(ctx, message, cardX + 80, cardY + 1006, cardW - 160, 58, 2);
+        ctx.fillStyle = theme.text;
+        ctx.font = '700 44px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        drawCanvasMultilineText(ctx, message, cardX + 80, messageY + 122, cardW - 160, 58, 2);
 
-      ctx.fillStyle = '#77746d';
+        if (label === 'story') {
+          ctx.fillStyle = theme.muted;
+          ctx.font = '600 30px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+          drawCanvasMultilineText(ctx, 'One day at a time. One pause at a time.', cardX + 80, messageY + 300, cardW - 160, 44, 2);
+        }
+      } else {
+        ctx.fillStyle = theme.green;
+        ctx.font = '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        ctx.fillText(message, cardX + 80, cardY + cardH - 100);
+      }
+
+      ctx.fillStyle = theme.muted;
       ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
       ctx.fillText('Shared from my private local tracker', cardX + 80, cardY + cardH - 44);
 
@@ -691,9 +848,18 @@ ${message}`;
 
     function saveUnsent() {
       const text = document.getElementById('unsentMessage').value.trim();
+      const customTrigger = document.getElementById('customTrigger')?.value.trim() || '';
       if (!text) return showToast('Write something first');
-      state.unsentMessages.unshift({ text, intensity: Number(document.getElementById('urgeIntensity').value), date: new Date().toISOString() });
+      state.unsentMessages.unshift({
+        text,
+        intensity: Number(document.getElementById('urgeIntensity').value),
+        triggers: [...selectedUrgeTriggers],
+        customTrigger,
+        date: new Date().toISOString()
+      });
       document.getElementById('unsentMessage').value = '';
+      if (document.getElementById('customTrigger')) document.getElementById('customTrigger').value = '';
+      selectedUrgeTriggers.clear();
       saveState();
       showToast('Saved instead of sending');
     }
@@ -832,6 +998,32 @@ ${message}`;
     document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
     document.getElementById('saveUnsentBtn').addEventListener('click', saveUnsent);
     document.getElementById('urgeIntensity').addEventListener('input', e => document.getElementById('urgeIntensityValue').textContent = e.target.value);
+    document.getElementById('triggerButtons').addEventListener('click', e => {
+      const btn = e.target.closest('[data-trigger]');
+      if (!btn) return;
+      const trigger = btn.dataset.trigger;
+      selectedUrgeTriggers.has(trigger) ? selectedUrgeTriggers.delete(trigger) : selectedUrgeTriggers.add(trigger);
+      renderTriggerButtons();
+    });
+    document.getElementById('nextGroundingBtn').addEventListener('click', () => {
+      groundingStepIndex = (groundingStepIndex + 1) % groundingSteps.length;
+      renderGroundingStep();
+    });
+    document.getElementById('saveLetterBtn').addEventListener('click', saveLetter);
+    document.getElementById('urgeHistory').addEventListener('click', e => {
+      const btn = e.target.closest('[data-delete-urge]');
+      if (!btn) return;
+      state.unsentMessages.splice(Number(btn.dataset.deleteUrge), 1);
+      saveState();
+      showToast('Urge deleted');
+    });
+    document.getElementById('letterList').addEventListener('click', e => {
+      const btn = e.target.closest('[data-delete-letter]');
+      if (!btn) return;
+      state.letters = state.letters.filter(letter => letter.id !== btn.dataset.deleteLetter);
+      saveState();
+      showToast('Letter deleted');
+    });
     document.getElementById('copyShareBtn').addEventListener('click', copyShare);
     document.getElementById('nativeShareBtn').addEventListener('click', nativeShare);
     document.getElementById('refreshShareBtn').addEventListener('click', () => {
@@ -844,6 +1036,16 @@ ${message}`;
     document.getElementById('refreshShareImageBtn').addEventListener('click', () => {
       renderShareImage();
       showToast('Share image refreshed');
+    });
+    document.getElementById('shareImageTemplate').addEventListener('change', e => {
+      state.shareImageTemplate = e.target.value;
+      saveState();
+      showToast('Image style updated');
+    });
+    document.getElementById('shareImageSize').addEventListener('change', e => {
+      state.shareImageSize = e.target.value;
+      saveState();
+      showToast('Image size updated');
     });
     document.getElementById('saveNameBtn').addEventListener('click', () => {
       const name = document.getElementById('editName').value.trim();

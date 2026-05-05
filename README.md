@@ -34,3 +34,14 @@ if (incomingVersion < 3) {
 
 ## Still recommended
 Users should still export JSON sometimes. Browser storage can be cleared by device/browser settings, private mode, or reinstalling the browser.
+
+## Added in feature upgrade v3
+- Trigger tracking inside the emergency urge flow.
+- Urge history list with intensity, trigger, message preview, and delete action.
+- “Letters I never send” private letter journal.
+- Grounding exercise steps inside the emergency modal.
+- Share image templates: Soft green, Minimal cream, Calm dark.
+- Share image sizes: Portrait, Story, Square.
+
+## Data safety note for v3
+This update keeps `STORAGE_KEY = 'ncc_local_v1'` and upgrades saved data through `migrateState()`. Existing users should keep their local progress after replacing the website files.

@@ -127,6 +127,23 @@
 </div>
 <div class="success hidden" id="relapseMessage" style="margin-top:12px">You are not back to zero. You are learning your pattern.</div>
 </div>
+<div class="grid-2 feature-grid">
+<div class="card">
+<h2>Urge history</h2>
+<p class="subtitle">A private record of urges you survived instead of sending.</p>
+<div class="list" id="urgeHistory"></div>
+</div>
+<div class="card">
+<h2>Letters I never send</h2>
+<p class="subtitle">Write what you need to release. Save it here, not in their messages.</p>
+<div class="form-row">
+<input id="letterTitle" maxlength="80" placeholder="Letter title, optional" type="text"/>
+<textarea id="letterBody" placeholder="Write the letter here…"></textarea>
+<button class="soft-btn" id="saveLetterBtn" type="button">Save letter privately</button>
+</div>
+<div class="list" id="letterList" style="margin-top:14px"></div>
+</div>
+</div>
 </section>
 <section class="section" id="share">
 <div class="hero">
@@ -150,6 +167,24 @@
 <div>
 <h2>Progress image</h2>
 <p class="subtitle">Download a PNG share card or share the image directly if your browser supports it.</p>
+</div>
+</div>
+<div class="grid-2 compact-controls">
+<div>
+<label for="shareImageTemplate">Image style</label>
+<select id="shareImageTemplate">
+<option value="soft">Soft green</option>
+<option value="minimal">Minimal cream</option>
+<option value="dark">Calm dark</option>
+</select>
+</div>
+<div>
+<label for="shareImageSize">Image size</label>
+<select id="shareImageSize">
+<option value="portrait">Portrait 1080×1350</option>
+<option value="story">Story 1080×1920</option>
+<option value="square">Square 1080×1080</option>
+</select>
 </div>
 </div>
 <div class="share-image-preview">
@@ -232,9 +267,19 @@
 <h3 style="margin-top:0">Your reasons</h3>
 <p class="subtitle" id="reasonsPreview"></p>
 </div>
+<div class="soft-card grounding-card" style="margin-top:14px">
+<h3 style="margin-top:0">Grounding exercise</h3>
+<p class="subtitle" id="groundingText">Name 5 things you can see. Then breathe slowly.</p>
+<div class="actions"><button class="ghost-btn" id="nextGroundingBtn" type="button">Next grounding step</button></div>
+</div>
 <div class="form-row">
 <label for="urgeIntensity">Urge intensity: <span id="urgeIntensityValue">5</span>/10</label>
 <input id="urgeIntensity" max="10" min="1" type="range" value="5"/>
+<div>
+<label>What triggered the urge?</label>
+<div class="moods trigger-buttons" id="triggerButtons"></div>
+<input id="customTrigger" maxlength="80" placeholder="Custom trigger, optional" type="text" style="margin-top:10px"/>
+</div>
 <textarea id="unsentMessage" placeholder="Write the message here, but don’t send it…"></textarea>
 <button class="soft-btn" id="saveUnsentBtn" type="button">Save instead of sending</button>
 </div>
