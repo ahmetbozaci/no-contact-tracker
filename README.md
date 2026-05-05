@@ -82,3 +82,14 @@ The app now keeps the same features but groups advanced/private tools with nativ
 - Progress keeps insights and calendar visible while private notes are collapsible.
 - Settings keeps essential controls visible and advanced customization/data tools organized.
 No storage keys or saved data formats were removed.
+
+
+## Usability simplification pass
+No features were added or removed. This pass makes the existing app easier to use:
+- Clearer tab language (`Help`, `Review`).
+- Today stays focused on check-in and immediate support.
+- Daily boundaries remain available but are collapsed by default.
+- Emergency starts with the 20-minute pause as the primary action.
+- Advanced/private tools remain available in collapsible sections.
+- Mobile tap targets and spacing were softened.
+- Storage key and saved data compatibility were preserved.

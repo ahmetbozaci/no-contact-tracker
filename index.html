@@ -29,8 +29,8 @@
 <div class="brand"><div class="leaf"></div><span>No Contact Challenge</span></div>
 <nav aria-label="Main navigation" class="desktop-nav">
 <button class="nav-btn active" data-tab="today" type="button">Today</button>
-<button class="nav-btn" data-tab="progress" type="button">Progress</button>
-<button class="nav-btn" data-tab="emergency" type="button">Emergency</button>
+<button class="nav-btn" data-tab="progress" type="button">Review</button>
+<button class="nav-btn" data-tab="emergency" type="button">Help</button>
 <button class="nav-btn" data-tab="share" type="button">Share</button>
 <button class="nav-btn" data-tab="settings" type="button">Settings</button>
 </nav>
@@ -44,7 +44,7 @@
 <div>
 <div class="tag"><span class="dot"></span><span id="todayTag">Today is a new choice</span></div>
 <h1 class="title">Choose peace, <em>one day</em> at a time.</h1>
-<p class="subtitle">A private habit tracker for no-contact. Your notes, streaks, urges, and progress stay on this device.</p>
+<p class="subtitle">A private place to check in, pause during urges, and protect your peace one day at a time.</p>
 </div>
 <div class="card checkin-box">
 <button class="big-check" id="checkinBtn" type="button">
@@ -64,11 +64,11 @@
 <div class="stats" id="statsGrid"></div>
 <div class="grid-2">
 <div class="card">
-<h2>Today’s focus</h2>
-<p class="subtitle">When the urge comes, delay. Write it here instead of sending. Then choose yourself again.</p>
+<h2>Need support today?</h2>
+<p class="subtitle">If the urge gets loud, pause first. You can write it without sending it.</p>
 <div class="actions">
-<button class="danger-btn" data-open-emergency="" type="button">I feel like contacting them</button>
-<button class="ghost-btn" data-tab-jump="share" type="button">Share progress</button>
+<button class="danger-btn calm-primary-action" data-open-emergency="" type="button">I feel like contacting them</button>
+<button class="ghost-btn" data-tab-jump="progress" type="button">Review progress</button>
 </div>
 </div>
 <div class="card">
@@ -77,7 +77,7 @@
 </div>
 </div>
 <!-- Today-only daily boundary tools. Keep this block inside #today. -->
-<details class="card disclosure-card" open>
+<details class="card disclosure-card">
 <summary>
 <span>
 <strong>Daily boundaries</strong>
@@ -106,9 +106,9 @@
 <section class="section" id="progress">
 <div class="hero">
 <div>
-<div class="tag"><span class="dot"></span> Your private progress</div>
-<h1 class="title">Your healing record.</h1>
-<p class="subtitle">See checked-in days, milestones, and private history without comparing yourself to anyone else.</p>
+<div class="tag"><span class="dot"></span> Private review</div>
+<h1 class="title">See what is helping.</h1>
+<p class="subtitle">Review streaks, patterns, milestones, and notes without comparing yourself to anyone else.</p>
 </div>
 <div class="card">
 <h2>Milestones</h2>
@@ -116,8 +116,8 @@
 </div>
 </div>
 <div class="card">
-<h2>Progress insights</h2>
-<p class="subtitle">Private patterns from your local data. These are simple calculations, not judgment.</p>
+<h2>Helpful patterns</h2>
+<p class="subtitle">Simple local insights to understand what helps and what makes urges harder.</p>
 <div class="insights-grid" id="progressInsights"></div>
 </div>
 
@@ -144,10 +144,10 @@
 <section class="section" id="emergency">
 <div class="hero">
 <div>
-<div class="tag"><span class="dot"></span> Pause before acting</div>
-<h1 class="title">You do not have to send it.</h1>
-<p class="subtitle">Use the urge timer, read your reasons, and save the message privately instead of contacting them.</p>
-<div class="actions"><button class="danger-btn" data-open-emergency="" type="button">Open emergency support</button></div>
+<div class="tag"><span class="dot"></span> Help in an urge</div>
+<h1 class="title">Pause before you send.</h1>
+<p class="subtitle">Start with the 20-minute pause. Then read your reasons, write without sending, or contact someone safe.</p>
+<div class="actions"><button class="danger-btn calm-primary-action" data-open-emergency="" type="button">Start 20-minute pause</button></div>
 </div>
 <div class="card">
 <h2>Reasons I started</h2>
@@ -155,7 +155,7 @@
 <div class="actions"><button class="soft-btn" id="saveReasonsBtn" type="button">Save reasons</button></div>
 </div>
 </div>
-<details class="card disclosure-card" open>
+<details class="card disclosure-card">
 <summary>
 <span>
 <strong>Emergency preparation</strong>
@@ -186,15 +186,15 @@
 <details class="card disclosure-card">
 <summary>
 <span>
-<strong>Relapse / reset support</strong>
-<small>Use this gently if no-contact was broken</small>
+<strong>Restart support</strong>
+<small>Gentle help if contact happened</small>
 </span>
 </summary>
 <p class="subtitle">If you contacted them, checked their profile, or replied, this is not shame. It is information.</p>
 <div class="form-row">
 <textarea id="relapseWhat" placeholder="What happened?"></textarea>
 <input id="relapseTrigger" placeholder="What triggered it? Example: loneliness, their photo, night time…" type="text"/>
-<button class="danger-btn" id="saveRelapseBtn" type="button">I broke no-contact — help me restart gently</button>
+<button class="danger-btn" id="saveRelapseBtn" type="button">Save what happened and restart gently</button>
 </div>
 <div class="success hidden" id="relapseMessage" style="margin-top:12px">You are not back to zero. You are learning your pattern.</div>
 </details>
@@ -230,8 +230,8 @@
 <div class="hero">
 <div>
 <div class="tag"><span class="dot"></span> Discord ready</div>
-<h1 class="title">Share as text or picture.</h1>
-<p class="subtitle">Generate a simple text update or a calm share card image for your Discord group.</p>
+<h1 class="title">Share only what feels right.</h1>
+<p class="subtitle">Create a simple text update or a calm progress image when you want encouragement from your group.</p>
 </div>
 <details class="card disclosure-card" open>
 <summary>
@@ -288,7 +288,7 @@
 <div>
 <div class="tag"><span class="dot"></span> Local settings</div>
 <h1 class="title">Your data stays here.</h1>
-<p class="subtitle">Export, import, edit, or reset your local data. Nothing is sent to a server.</p>
+<p class="subtitle">Manage privacy, reminders, backups, and local data. Nothing is sent to a server.</p>
 </div>
 <div class="card">
 <h2>Profile</h2>
@@ -300,8 +300,8 @@
 </div>
 <div class="grid-2">
 <div class="card">
-<h2>Privacy mode</h2>
-<p class="subtitle">Hide sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>
+<h2>Quick privacy</h2>
+<p class="subtitle">Blur sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>
 <div class="actions">
 <button class="soft-btn" id="privacyModeToggle" type="button">Enable privacy mode</button>
 </div>
@@ -368,15 +368,15 @@
 <div class="modal">
 <div class="modal-top">
 <div>
-<h2 id="emergencyTitle" style="margin:0">Pause for 20 minutes</h2>
-<p class="subtitle">An urge is a wave. You can let it pass without acting.</p>
+<h2 id="emergencyTitle" style="margin:0">Start with a pause</h2>
+<p class="subtitle">You only need to get through this wave. Write here, breathe, and wait before acting.</p>
 </div>
 <button aria-label="Close" class="icon-btn" id="closeEmergencyBtn" type="button">×</button>
 </div>
 <div class="timer" id="timerDisplay">20:00</div>
 <p class="breathing" id="breathingText">Breathe in slowly. Hold. Breathe out gently.</p>
 <div class="actions" style="justify-content:center">
-<button class="primary-btn" id="startTimerBtn" type="button">Start timer</button>
+<button class="primary-btn" id="startTimerBtn" type="button">Start 20-minute timer</button>
 <button class="ghost-btn" id="resetTimerBtn" type="button">Reset</button>
 </div>
 <div class="soft-card" style="margin-top:14px">

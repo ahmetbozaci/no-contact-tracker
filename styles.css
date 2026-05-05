@@ -389,3 +389,85 @@
 .nested-grid .soft-card h2 {
   margin-top: 0;
 }
+
+
+/* Usability pass: calmer hierarchy and easier mobile tapping */
+.calm-primary-action {
+  min-height: 52px;
+  padding-inline: 18px;
+}
+
+.disclosure-card:not([open]) {
+  box-shadow: none;
+}
+
+.disclosure-card:not([open]) > summary {
+  margin-bottom: 0;
+}
+
+.disclosure-card > summary {
+  min-height: 48px;
+}
+
+.hero + .stats {
+  margin-top: 8px;
+}
+
+.card h2,
+.soft-card h2 {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 520px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .topbar {
+    padding: 10px 14px;
+  }
+
+  .brand span {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: clamp(29px, 9vw, 40px);
+  }
+
+  .card,
+  .soft-card {
+    padding: 15px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions > button,
+  .actions > label {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .big-check {
+    min-height: 84px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat {
+    padding: 13px;
+  }
+
+  .stat strong {
+    font-size: 24px;
+  }
+
+  .modal {
+    padding: 16px;
+  }
+}
