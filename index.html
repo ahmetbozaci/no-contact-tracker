@@ -13,7 +13,7 @@
 <div class="card setup-card">
 <div class="tag"><span class="dot"></span> Private local tracker</div>
 <h1>Start your no-contact journey gently.</h1>
-<p class="subtitle">No account. No community. Your progress stays on this device using localStorage.</p>
+<p class="subtitle">No account. No community. Your progress is saved privately on this device.</p>
 <form class="form-row" id="setupForm">
 <div>
 <label for="setupName">Your display name</label>
@@ -305,9 +305,9 @@
 <section class="section" id="settings">
 <div class="hero">
 <div>
-<div class="tag"><span class="dot"></span> Local settings</div>
-<h1 class="title">Your data stays here.</h1>
-<p class="subtitle">Manage privacy, reminders, backups, and local data. Nothing is sent to a server.</p>
+<div class="tag"><span class="dot"></span> Private settings</div>
+<h1 class="title">Your progress stays private.</h1>
+<p class="subtitle">Manage privacy, reminders, backups, and saved progress. Nothing is sent anywhere.</p>
 </div>
 <div class="card">
 <h2>Profile</h2>
@@ -345,7 +345,7 @@
 
 <div class="card data-safety-card" id="dataSafetySummary">
 <h2>Data safety</h2>
-<p class="subtitle">Your progress is stored only on this device. Export a JSON backup when this data matters to you.</p>
+<p class="subtitle">Your progress is stored only on this device. Export a backup file when this progress matters to you.</p>
 <div class="data-safety-grid">
 <div><strong id="lastExportStatus">Not exported yet</strong><span>Last export</span></div>
 <div><strong id="lastBackupStatus">No backup yet</strong><span>Latest local backup</span></div>
@@ -369,21 +369,21 @@
 <details class="card disclosure-card" open>
 <summary>
 <span>
-<strong>Data management</strong>
-<small>Export, import, backup, and reset</small>
+<strong>Backup and reset</strong>
+<small>Save, restore, or reset your backup</small>
 </span>
 </summary>
 <div class="actions">
-<button class="soft-btn" id="exportBtn" type="button">Export JSON</button>
-<label class="ghost-btn" for="importFile" style="cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Import JSON</label>
+<button class="soft-btn" id="exportBtn" type="button">Export backup</button>
+<label class="ghost-btn" for="importFile" style="cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Import backup</label>
 <input accept="application/json" class="hidden" id="importFile" type="file"/>
 <button class="ghost-btn" id="manualBackupBtn" type="button">Create backup</button>
 <button class="ghost-btn" id="restoreLatestBackupBtn" type="button">Restore latest backup</button>
 <button class="ghost-btn" id="clearTodayBtn" type="button">Clear today only</button>
-<button class="danger-btn" id="resetAllBtn" type="button">Reset all data</button>
+<button class="danger-btn" id="resetAllBtn" type="button">Reset all progress</button>
 </div>
 <div id="backupNotice" class="notice hidden" style="margin-top:12px"></div>
-<div class="danger-note" style="margin-top:12px">Automatic backups are saved before future data migrations. Export regularly too, because browser/device changes can still clear localStorage.</div>
+<div class="danger-note" style="margin-top:12px">A local backup is saved before major changes. Export a backup sometimes too, because browser or device changes can still remove saved progress.</div>
 </details>
 </div>
 </section>

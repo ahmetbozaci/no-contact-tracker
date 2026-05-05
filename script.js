@@ -213,17 +213,17 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       const keys = getBackupKeys();
       const latestKey = keys[keys.length - 1];
       if (!latestKey) return showToast('No backup found');
-      if (!confirm('Restore the latest local backup? Current data will be backed up first.')) return;
+      if (!confirm('Restore the latest backup? Your current progress will be backed up first.')) return;
 
       try {
         const currentBackupKey = createLocalBackup('Before restoring latest backup');
         const backup = JSON.parse(localStorage.getItem(latestKey));
         state = migrateState(backup.data || backup);
         saveState();
-        showBackupNotice(`Latest backup restored. A backup of your previous current data was also saved${currentBackupKey ? '.' : ' if storage allowed it.'}`);
+        showBackupNotice(`Latest backup restored. Your previous progress was backed up first${currentBackupKey ? '.' : ' if storage allowed it.'}`);
         showToast('Backup restored');
       } catch {
-        showToast('Could not restore backup');
+        showToast('Could not restore this backup');
       }
     }
 
@@ -741,12 +741,12 @@ ${message}`;
 
     function downloadShareImage() {
       if (!latestShareImageDataUrl) renderShareImage();
-      if (!latestShareImageDataUrl) return showToast('Could not create image');
+      if (!latestShareImageDataUrl) return showToast('Could not create picture');
       const link = document.createElement('a');
       link.href = latestShareImageDataUrl;
       link.download = `no-contact-progress-${todayKey()}.png`;
       link.click();
-      showToast('PNG downloaded');
+      showToast('Picture downloaded');
     }
 
     function dataUrlToFile(dataUrl, fileName) {
@@ -763,12 +763,12 @@ ${message}`;
 
     async function shareImage() {
       if (!latestShareImageDataUrl) renderShareImage();
-      if (!latestShareImageDataUrl) return showToast('Could not create image');
+      if (!latestShareImageDataUrl) return showToast('Could not create picture');
       const file = dataUrlToFile(latestShareImageDataUrl, `no-contact-progress-${todayKey()}.png`);
 
       if (!navigator.share) {
         downloadShareImage();
-        showToast('Image sharing is not available here, so the PNG was downloaded instead');
+        showToast('Image sharing is not available here, so the picture was downloaded instead');
         return;
       }
 
@@ -781,7 +781,7 @@ ${message}`;
           });
         } else {
           await navigator.share({ text: document.getElementById('shareText').textContent });
-          showToast('This browser shared the text instead of the image');
+          showToast('This browser shared the text instead of the picture');
         }
       } catch {
         // User cancelled share or browser blocked it.
@@ -880,7 +880,7 @@ ${message}`;
 
     async function nativeShare() {
       const text = document.getElementById('shareText').textContent;
-      if (!navigator.share) return showToast('Native share is not available here');
+      if (!navigator.share) return showToast('Sharing is not available here');
       try { await navigator.share({ text }); } catch {}
     }
 
@@ -909,10 +909,10 @@ ${message}`;
       if ('Notification' in window) {
         const permission = await Notification.requestPermission();
         notice.textContent = permission === 'granted'
-          ? 'Browser notifications are enabled. For iPhone/Safari, also set a phone alarm for reliability.'
-          : 'Notifications were not enabled. Please set a phone alarm manually for reliable reminders.';
+          ? 'Reminders are enabled here. For iPhone/Safari, also set a phone alarm for reliability.'
+          : 'Reminders were not enabled here. Please set a phone alarm for reliable reminders.';
       } else {
-        notice.textContent = 'This browser does not support notifications. Please set a phone alarm manually.';
+        notice.textContent = 'This browser cannot show reminders. Please set a phone alarm instead.';
       }
       notice.classList.remove('hidden');
       saveState();
@@ -925,7 +925,7 @@ ${message}`;
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `no-contact-data-${todayKey()}.json`;
+      a.download = `no-contact-backup-${todayKey()}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
     }
@@ -940,9 +940,9 @@ ${message}`;
           createLocalBackup('Before importing JSON file');
           state = migrateState(data);
           saveState();
-          showToast('Data imported');
+          showToast('Backup imported');
         } catch {
-          showToast('Could not import this JSON file');
+          showToast('Could not import this backup file');
         }
       };
       reader.readAsText(file);
@@ -1068,7 +1068,7 @@ ${message}`;
     document.getElementById('manualBackupBtn').addEventListener('click', () => {
       const key = createLocalBackup('Manual backup');
       if (!key) return showToast('Could not create backup');
-      showBackupNotice('Manual backup created on this device. You can restore the latest backup from here.');
+      showBackupNotice('Backup created on this device. You can restore the latest backup from here.');
       showToast('Backup created');
     });
     document.getElementById('restoreLatestBackupBtn').addEventListener('click', restoreLatestBackup);
@@ -1082,12 +1082,12 @@ ${message}`;
       showToast('Today cleared');
     });
     document.getElementById('resetAllBtn').addEventListener('click', () => {
-      if (!confirm('Reset all local data? A backup will be created first, but reset cannot be undone if browser storage is cleared.')) return;
+      if (!confirm('Reset all saved progress? A backup will be created first, but this cannot be undone if your browser removes saved data.')) return;
       createLocalBackup('Before resetting all data');
       localStorage.removeItem(STORAGE_KEY);
       state = defaultState();
       render();
-      showToast('Reset complete');
+      showToast('Progress reset');
     });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEmergency(); });
 

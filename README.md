@@ -103,3 +103,11 @@ No major feature expansion. This pass improves ease of use:
 - Settings shows last export/latest local backup status.
 - Quick export button added to data safety card.
 - Existing storage key and local-only architecture are preserved.
+
+
+## User-facing language pass
+Technical terms were removed from the app interface where possible:
+- `localStorage` is described to users as progress saved privately on this device.
+- `JSON` is described as a backup file.
+- Export/import/reset wording is friendlier and less developer-focused.
+Technical terms remain in code and README where useful for development.
