@@ -111,3 +111,9 @@ Technical terms were removed from the app interface where possible:
 - `JSON` is described as a backup file.
 - Export/import/reset wording is friendlier and less developer-focused.
 Technical terms remain in code and README where useful for development.
+
+
+## Reminder feature removed
+The browser reminder/alarm UI was removed because website notifications are not reliable enough to behave like a real phone alarm, especially on mobile browsers.
+For reliable reminders, users should set a normal phone alarm outside the app.
+Existing saved reminder fields are left harmlessly in saved data for compatibility.

@@ -28,7 +28,6 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     let calendarDate = new Date();
     let timerSeconds = 20 * 60;
     let timerInterval = null;
-    let reminderInterval = null;
     let latestShareImageDataUrl = '';
     let selectedUrgeTriggers = new Set();
     let groundingStepIndex = 0;
@@ -339,7 +338,6 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       document.getElementById('dailyQuote').textContent = quotes[Math.floor(Date.now() / 86400000) % quotes.length];
       document.getElementById('editName').value = state.username;
       document.getElementById('reasonsText').value = state.reasons || '';
-      document.getElementById('reminderTime').value = state.reminderTime || '';
       document.getElementById('shareImageTemplate').value = state.shareImageTemplate || 'soft';
       document.getElementById('shareImageSize').value = state.shareImageSize || 'portrait';
 
@@ -366,7 +364,6 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       renderUrgeHistory();
       renderLetters();
       renderGroundingStep();
-      updateReminderLoop();
     }
 
     function renderMoodButtons() {
@@ -884,40 +881,6 @@ ${message}`;
       try { await navigator.share({ text }); } catch {}
     }
 
-    function updateReminderLoop() {
-      if (reminderInterval) clearInterval(reminderInterval);
-      if (!state.reminderTime) return;
-      reminderInterval = setInterval(() => {
-        const now = new Date();
-        const current = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        const today = todayKey();
-        if (current === state.reminderTime && state.reminderLastShown !== today && !getStats().checkedToday) {
-          state.reminderLastShown = today;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('No Contact Challenge', { body: 'A gentle reminder to check in today 🌿' });
-          } else {
-            showToast('Reminder: check in today 🌿');
-          }
-        }
-      }, 30000);
-    }
-
-    async function saveReminder() {
-      state.reminderTime = document.getElementById('reminderTime').value;
-      const notice = document.getElementById('reminderNotice');
-      if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        notice.textContent = permission === 'granted'
-          ? 'Reminders are enabled here. For iPhone/Safari, also set a phone alarm for reliability.'
-          : 'Reminders were not enabled here. Please set a phone alarm for reliable reminders.';
-      } else {
-        notice.textContent = 'This browser cannot show reminders. Please set a phone alarm instead.';
-      }
-      notice.classList.remove('hidden');
-      saveState();
-      showToast('Reminder saved');
-    }
 
     function exportData() {
       state.lastExportAt = new Date().toISOString();
@@ -1055,13 +1018,6 @@ ${message}`;
       state.username = name;
       saveState();
       showToast('Username saved');
-    });
-    document.getElementById('saveReminderBtn').addEventListener('click', saveReminder);
-    document.getElementById('testNotificationBtn').addEventListener('click', async () => {
-      if (!('Notification' in window)) return showToast('Notifications not supported');
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') new Notification('No Contact Challenge', { body: 'Test reminder works 🌿' });
-      else showToast('Notification permission not granted');
     });
     document.getElementById('exportBtn').addEventListener('click', exportData);
     document.getElementById('importFile').addEventListener('change', e => importData(e.target.files[0]));
