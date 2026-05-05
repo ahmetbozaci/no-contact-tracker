@@ -93,3 +93,13 @@ No features were added or removed. This pass makes the existing app easier to us
 - Advanced/private tools remain available in collapsible sections.
 - Mobile tap targets and spacing were softened.
 - Storage key and saved data compatibility were preserved.
+
+
+## Polished usability pass
+No major feature expansion. This pass improves ease of use:
+- First-time guide on Today.
+- Clear privacy indicator in the header when privacy mode is enabled.
+- Emergency modal now shows a simple four-step flow.
+- Settings shows last export/latest local backup status.
+- Quick export button added to data safety card.
+- Existing storage key and local-only architecture are preserved.

@@ -471,3 +471,106 @@
     padding: 16px;
   }
 }
+
+
+/* Polished usability additions */
+.header-status {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.privacy-indicator {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.welcome-guide {
+  margin: 14px 0;
+}
+
+.guide-steps {
+  display: grid;
+  gap: 10px;
+}
+
+.guide-step,
+.emergency-step {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.guide-step strong,
+.emergency-step strong {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 13px;
+}
+
+.guide-step span,
+.emergency-step span {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.emergency-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  background: var(--card-soft);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.data-safety-card {
+  margin-bottom: 14px;
+}
+
+.data-safety-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.data-safety-grid div {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.data-safety-grid strong {
+  display: block;
+  font-size: 15px;
+}
+
+.data-safety-grid span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 520px) {
+  .emergency-steps,
+  .data-safety-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-status {
+    max-width: 120px;
+  }
+}

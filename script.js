@@ -920,6 +920,8 @@ ${message}`;
     }
 
     function exportData() {
+      state.lastExportAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1326,6 +1328,7 @@ function renderNextFeatures() {
   renderContactCost();
   renderPrivacyMode();
   renderTodayPlanEditor();
+  renderPolishHelpers();
 }
 
 const originalRenderForNextFeatures = render;
@@ -1448,4 +1451,56 @@ function bindNextFeatureEvents() {
 
 ensureNextFeatureState();
 bindNextFeatureEvents();
+bindPolishEvents();
 render();
+
+
+/* Polished usability helpers */
+function renderPolishHelpers() {
+  const guide = document.getElementById('firstTimeGuide');
+  if (guide) {
+    const hasUsedCoreFeatures = getStats().total > 0 || Boolean(state.reasons) || (state.unsentMessages || []).length > 0;
+    const dismissed = Boolean(state.dismissedGuide);
+    guide.classList.toggle('hidden', dismissed || hasUsedCoreFeatures);
+  }
+
+  const privacyIndicator = document.getElementById('privacyIndicator');
+  if (privacyIndicator) {
+    privacyIndicator.classList.toggle('hidden', !state.privacyMode);
+  }
+
+  const lastExportStatus = document.getElementById('lastExportStatus');
+  if (lastExportStatus) {
+    lastExportStatus.textContent = state.lastExportAt
+      ? new Date(state.lastExportAt).toLocaleDateString()
+      : 'Not exported yet';
+  }
+
+  const lastBackupStatus = document.getElementById('lastBackupStatus');
+  if (lastBackupStatus) {
+    const keys = getBackupKeys();
+    if (!keys.length) {
+      lastBackupStatus.textContent = 'No backup yet';
+    } else {
+      const latestDate = keys[keys.length - 1].replace(BACKUP_PREFIX, '');
+      const parsed = new Date(latestDate);
+      lastBackupStatus.textContent = Number.isNaN(parsed.getTime()) ? 'Backup found' : parsed.toLocaleDateString();
+    }
+  }
+}
+
+function bindPolishEvents() {
+  const dismissGuideBtn = document.getElementById('dismissGuideBtn');
+  if (dismissGuideBtn) {
+    dismissGuideBtn.addEventListener('click', () => {
+      state.dismissedGuide = true;
+      saveState();
+      showToast('Guide hidden');
+    });
+  }
+
+  const quickExportBtn = document.getElementById('quickExportBtn');
+  if (quickExportBtn) {
+    quickExportBtn.addEventListener('click', exportData);
+  }
+}

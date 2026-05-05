@@ -34,7 +34,7 @@
 <button class="nav-btn" data-tab="share" type="button">Share</button>
 <button class="nav-btn" data-tab="settings" type="button">Settings</button>
 </nav>
-<div class="user-chip" id="userChip"></div>
+<div class="header-status"><span class="privacy-indicator hidden" id="privacyIndicator">Privacy on</span><div class="user-chip" id="userChip"></div></div>
 </div>
 </header>
 <main class="app-shell">
@@ -62,6 +62,25 @@
 </div>
 </div>
 <div class="stats" id="statsGrid"></div>
+
+<details class="card disclosure-card welcome-guide" id="firstTimeGuide" open>
+<summary>
+<span>
+<strong>Start simply</strong>
+<small>Four gentle steps for using this app</small>
+</span>
+</summary>
+<div class="guide-steps">
+<div class="guide-step"><strong>1</strong><span>Check in once a day.</span></div>
+<div class="guide-step"><strong>2</strong><span>Use Help when an urge feels strong.</span></div>
+<div class="guide-step"><strong>3</strong><span>Write your reasons so you can read them later.</span></div>
+<div class="guide-step"><strong>4</strong><span>Export your data sometimes because it stays only on this device.</span></div>
+</div>
+<div class="actions">
+<button class="ghost-btn" id="dismissGuideBtn" type="button">Hide this guide</button>
+</div>
+</details>
+
 <div class="grid-2">
 <div class="card">
 <h2>Need support today?</h2>
@@ -323,6 +342,19 @@
 </details>
 </div>
 
+
+<div class="card data-safety-card" id="dataSafetySummary">
+<h2>Data safety</h2>
+<p class="subtitle">Your progress is stored only on this device. Export a JSON backup when this data matters to you.</p>
+<div class="data-safety-grid">
+<div><strong id="lastExportStatus">Not exported yet</strong><span>Last export</span></div>
+<div><strong id="lastBackupStatus">No backup yet</strong><span>Latest local backup</span></div>
+</div>
+<div class="actions">
+<button class="soft-btn" id="quickExportBtn" type="button">Export backup now</button>
+</div>
+</div>
+
 <div class="grid-2">
 <div class="card">
 <h2>Reminder / alarm</h2>
@@ -372,6 +404,12 @@
 <p class="subtitle">You only need to get through this wave. Write here, breathe, and wait before acting.</p>
 </div>
 <button aria-label="Close" class="icon-btn" id="closeEmergencyBtn" type="button">×</button>
+</div>
+<div class="emergency-steps">
+<div class="emergency-step"><strong>1</strong><span>Breathe first</span></div>
+<div class="emergency-step"><strong>2</strong><span>Read your reasons</span></div>
+<div class="emergency-step"><strong>3</strong><span>Write without sending</span></div>
+<div class="emergency-step"><strong>4</strong><span>Choose a safe action</span></div>
 </div>
 <div class="timer" id="timerDisplay">20:00</div>
 <p class="breathing" id="breathingText">Breathe in slowly. Hold. Breathe out gently.</p>
