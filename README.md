@@ -127,3 +127,13 @@ No new feature category was added. This pass improves existing areas:
 - Reset actions are grouped in a safer Danger/Reset area.
 - Backup/export feedback is clearer.
 - Existing storage key and saved progress compatibility are preserved.
+
+
+## Share image style update
+The progress image generator in the Share section was redesigned to produce a calmer, more polished card inspired by the newer visual direction:
+- softer background and rounded card layout
+- large milestone headline
+- 2x2 stat cards
+- calm quote panel
+- decorative nature-inspired accents
+- still generated locally in-browser with canvas

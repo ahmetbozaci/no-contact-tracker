@@ -556,24 +556,152 @@ ${message}`;
       return { width: 1080, height: 1350, label: 'portrait' };
     }
 
+
     function getShareTheme() {
       const template = state.shareImageTemplate || 'soft';
+
       if (template === 'dark') {
         return {
-          bg: '#20231d', card: 'rgba(43,48,38,0.96)', cardSoft: '#313a2a', text: '#f5f0e8', muted: '#c9c3b8',
-          green: '#9fce68', greenSoft: '#334729', blueSoft: '#26384a', amberSoft: '#4b3926', amber: '#e2a95a', border: 'rgba(255,255,255,0.10)', shadow: 'rgba(0,0,0,0.26)'
+          page: '#1f241f',
+          pageGlowA: 'rgba(126,174,105,0.12)',
+          pageGlowB: 'rgba(229,178,120,0.08)',
+          card: '#2b312a',
+          cardSoft: '#323a31',
+          text: '#f4efe7',
+          muted: '#d1cabc',
+          line: 'rgba(255,255,255,0.10)',
+          accent: '#95c36f',
+          accentSoft: '#3a4b35',
+          warm: '#e0b07a',
+          statCard: '#313731',
+          footerHill1: '#4a5645',
+          footerHill2: '#5e6a57',
+          footerHill3: '#74806d'
         };
       }
+
       if (template === 'minimal') {
         return {
-          bg: '#faf7ef', card: '#ffffff', cardSoft: '#fbfaf6', text: '#2c2c2a', muted: '#77746d',
-          green: '#3b6d11', greenSoft: '#f2f7ea', blueSoft: '#edf5fb', amberSoft: '#fbf3e6', amber: '#ba7517', border: 'rgba(0,0,0,0.07)', shadow: 'rgba(44,44,42,0.06)'
+          page: '#f7f3eb',
+          pageGlowA: 'rgba(145,168,113,0.10)',
+          pageGlowB: 'rgba(222,189,146,0.09)',
+          card: '#fffdf9',
+          cardSoft: '#f4f1ea',
+          text: '#183d2f',
+          muted: '#6d7c73',
+          line: 'rgba(24,61,47,0.10)',
+          accent: '#456b52',
+          accentSoft: '#e8eee2',
+          warm: '#d7a56f',
+          statCard: '#fffdfa',
+          footerHill1: '#dde5d5',
+          footerHill2: '#cfd9c7',
+          footerHill3: '#becab5'
         };
       }
+
       return {
-        bg: '#f5f0e8', card: 'rgba(255,255,255,0.95)', cardSoft: '#fafaf7', text: '#2c2c2a', muted: '#77746d',
-        green: '#3b6d11', greenSoft: '#eaf3de', blueSoft: '#e6f1fb', amberSoft: '#faeeda', amber: '#ba7517', border: 'rgba(0,0,0,0.06)', shadow: 'rgba(44,44,42,0.08)'
+        page: '#f5f0e8',
+        pageGlowA: 'rgba(137,170,104,0.13)',
+        pageGlowB: 'rgba(230,191,141,0.11)',
+        card: '#fcfaf6',
+        cardSoft: '#f2efe7',
+        text: '#123b2a',
+        muted: '#6e7f74',
+        line: 'rgba(18,59,42,0.10)',
+        accent: '#4f7556',
+        accentSoft: '#e6ecd9',
+        warm: '#d9a56f',
+        statCard: '#fffdf9',
+        footerHill1: '#dfe6d6',
+        footerHill2: '#ced8c5',
+        footerHill3: '#bfcab5'
       };
+    }
+
+    function drawLeafSprig(ctx, x, y, scale, color, flip = 1) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale * flip, scale);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(0, 72);
+      ctx.quadraticCurveTo(14, 34, 24, 0);
+      ctx.stroke();
+
+      const leaves = [
+        { x: 18, y: 12, w: 22, h: 40, r: -0.85 },
+        { x: 0, y: 28, w: 20, h: 36, r: -1.75 },
+        { x: 28, y: 36, w: 22, h: 40, r: 0.45 },
+        { x: 8, y: 54, w: 20, h: 36, r: -1.15 }
+      ];
+
+      leaves.forEach(leaf => {
+        ctx.save();
+        ctx.translate(leaf.x, leaf.y);
+        ctx.rotate(leaf.r);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, leaf.w / 2, leaf.h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      ctx.restore();
+    }
+
+    function drawSparkle(ctx, x, y, size, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(0, -size);
+      ctx.lineTo(0, size);
+      ctx.moveTo(-size, 0);
+      ctx.lineTo(size, 0);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawFooterWaves(ctx, width, height, theme) {
+      const baseY = height - 34;
+
+      ctx.save();
+      ctx.fillStyle = theme.footerHill1;
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(0, baseY - 64);
+      ctx.bezierCurveTo(width * 0.14, baseY - 132, width * 0.28, baseY - 12, width * 0.44, baseY - 70);
+      ctx.bezierCurveTo(width * 0.58, baseY - 120, width * 0.74, baseY - 6, width, baseY - 92);
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = theme.footerHill2;
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(0, baseY - 36);
+      ctx.bezierCurveTo(width * 0.16, baseY - 92, width * 0.30, baseY - 8, width * 0.46, baseY - 44);
+      ctx.bezierCurveTo(width * 0.61, baseY - 80, width * 0.76, baseY - 4, width, baseY - 62);
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = theme.footerHill3;
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(0, baseY - 14);
+      ctx.bezierCurveTo(width * 0.18, baseY - 54, width * 0.36, baseY + 2, width * 0.52, baseY - 24);
+      ctx.bezierCurveTo(width * 0.69, baseY - 54, width * 0.84, baseY + 4, width, baseY - 34);
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
 
     function renderShareImage() {
@@ -581,38 +709,43 @@ ${message}`;
       if (!preview || !state.username) return;
 
       const { username, stats, mood, dateLabel, message } = getShareData();
-      const { width, height, label } = getShareCanvasSize();
+      const headlineCount = stats.currentStreak >= 7 ? `${Math.floor(stats.currentStreak / 7)} Week${Math.floor(stats.currentStreak / 7) === 1 ? '' : 's'}` : `${stats.currentStreak} Day${stats.currentStreak === 1 ? '' : 's'}`;
+      const sizeInfo = getShareCanvasSize();
+      const { width, height } = sizeInfo;
+      const isStory = sizeInfo.label === 'story';
+      const isSquare = sizeInfo.label === 'square';
       const theme = getShareTheme();
+
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = theme.bg;
+      ctx.fillStyle = theme.page;
       ctx.fillRect(0, 0, width, height);
 
-      if (state.shareImageTemplate !== 'minimal') {
-        const gradientA = ctx.createRadialGradient(130, 120, 0, 130, 120, 420);
-        gradientA.addColorStop(0, state.shareImageTemplate === 'dark' ? 'rgba(159,206,104,0.16)' : 'rgba(99,153,34,0.14)');
-        gradientA.addColorStop(1, 'rgba(99,153,34,0)');
-        ctx.fillStyle = gradientA;
-        ctx.fillRect(0, 0, width, height);
+      const glowA = ctx.createRadialGradient(width * 0.18, height * 0.12, 0, width * 0.18, height * 0.12, width * 0.38);
+      glowA.addColorStop(0, theme.pageGlowA);
+      glowA.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glowA;
+      ctx.fillRect(0, 0, width, height);
 
-        const gradientB = ctx.createRadialGradient(width - 150, 80, 0, width - 150, 80, 360);
-        gradientB.addColorStop(0, state.shareImageTemplate === 'dark' ? 'rgba(80,128,170,0.12)' : 'rgba(24,95,165,0.10)');
-        gradientB.addColorStop(1, 'rgba(24,95,165,0)');
-        ctx.fillStyle = gradientB;
-        ctx.fillRect(0, 0, width, height);
-      }
+      const glowB = ctx.createRadialGradient(width * 0.82, height * 0.10, 0, width * 0.82, height * 0.10, width * 0.30);
+      glowB.addColorStop(0, theme.pageGlowB);
+      glowB.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glowB;
+      ctx.fillRect(0, 0, width, height);
 
-      const cardX = 72;
-      const cardY = label === 'story' ? 126 : 78;
-      const cardW = width - 144;
-      const cardH = height - cardY * 2;
+      const margin = isStory ? 56 : 38;
+      const cardX = margin;
+      const cardY = isStory ? 64 : 34;
+      const cardW = width - margin * 2;
+      const cardH = height - cardY - margin;
+
       ctx.save();
-      ctx.shadowColor = theme.shadow;
-      ctx.shadowBlur = 36;
-      ctx.shadowOffsetY = 16;
+      ctx.shadowColor = 'rgba(0,0,0,0.08)';
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 18;
       roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
       ctx.fillStyle = theme.card;
       ctx.fill();
@@ -620,118 +753,219 @@ ${message}`;
 
       ctx.save();
       roundedRect(ctx, cardX, cardY, cardW, cardH, 34);
+      ctx.strokeStyle = theme.line;
       ctx.lineWidth = 2;
-      ctx.strokeStyle = theme.border;
       ctx.stroke();
       ctx.restore();
 
-      ctx.save();
-      roundedRect(ctx, cardX + 44, cardY + 44, 320, 56, 28);
-      ctx.fillStyle = theme.greenSoft;
-      ctx.fill();
-      ctx.translate(cardX + 84, cardY + 73);
-      ctx.rotate(-Math.PI / 4);
-      roundedRect(ctx, -12, -12, 24, 24, 10);
-      ctx.fillStyle = theme.green;
-      ctx.fill();
-      ctx.restore();
+      const innerPad = isStory ? 52 : 42;
+      const contentX = cardX + innerPad;
+      const contentW = cardW - innerPad * 2;
 
-      ctx.fillStyle = theme.green;
-      ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText('No Contact Challenge', cardX + 116, cardY + 79);
+      // top pill
+      const pillW = Math.min(420, contentW * 0.52);
+      const pillH = 66;
+      const pillX = cardX + (cardW - pillW) / 2;
+      const pillY = cardY + 42;
 
-      ctx.fillStyle = theme.muted;
+      roundedRect(ctx, pillX, pillY, pillW, pillH, 33);
+      ctx.fillStyle = theme.accentSoft;
+      ctx.fill();
+
+      ctx.fillStyle = theme.accent;
+      ctx.beginPath();
+      ctx.moveTo(pillX + 32, pillY + 34);
+      ctx.quadraticCurveTo(pillX + 24, pillY + 16, pillX + 10, pillY + 16);
+      ctx.quadraticCurveTo(pillX + 14, pillY + 31, pillX + 32, pillY + 34);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(pillX + 40, pillY + 38);
+      ctx.quadraticCurveTo(pillX + 53, pillY + 12, pillX + 70, pillY + 22);
+      ctx.quadraticCurveTo(pillX + 66, pillY + 41, pillX + 40, pillY + 38);
+      ctx.fill();
+
+      ctx.strokeStyle = theme.accent;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(pillX + 39, pillY + 48);
+      ctx.lineTo(pillX + 41, pillY + 20);
+      ctx.stroke();
+
+      ctx.fillStyle = theme.text;
       ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText(dateLabel, cardX + cardW - 250, cardY + 79);
+      ctx.fillText('No Contact Challenge', pillX + 92, pillY + 41);
 
-      ctx.fillStyle = theme.text;
-      ctx.font = '700 64px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      drawCanvasMultilineText(ctx, `Progress update for ${username}`, cardX + 48, cardY + 168, cardW - 96, 74, 2);
-
-      ctx.fillStyle = theme.muted;
-      ctx.font = '500 29px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      drawCanvasMultilineText(ctx, 'A gentle snapshot of today’s no-contact journey.', cardX + 48, cardY + 302, cardW - 96, 42, 2);
-
-      const streakY = cardY + 372;
-      ctx.save();
-      roundedRect(ctx, cardX + 48, streakY, cardW - 96, 250, 28);
-      ctx.fillStyle = theme.cardSoft;
+      // decorative sun/clouds/sparkles
+      const sunX = cardX + cardW - 118;
+      const sunY = cardY + 88;
+      ctx.fillStyle = 'rgba(228, 195, 153, 0.55)';
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 70, 0, Math.PI * 2);
       ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = theme.border;
-      ctx.stroke();
-      ctx.restore();
 
-      ctx.fillStyle = theme.green;
-      ctx.font = '800 30px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText('Current streak', cardX + 88, streakY + 74);
-      ctx.fillStyle = theme.text;
-      ctx.font = '800 118px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText(String(stats.current), cardX + 84, streakY + 188);
-      ctx.fillStyle = theme.muted;
-      ctx.font = '600 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText(`day${stats.current === 1 ? '' : 's'} of choosing peace`, cardX + 250, streakY + 182);
-
-      const smallY = streakY + 286;
-      const gap = 22;
-      const smallW = (cardW - 96 - gap * 2) / 3;
-      const items = [
-        { label: 'Total days', value: String(stats.total), accent: theme.greenSoft, color: theme.green },
-        { label: 'Longest streak', value: `${stats.longest}`, accent: theme.blueSoft, color: state.shareImageTemplate === 'dark' ? '#8bb8e8' : '#185fa5' },
-        { label: 'Today’s mood', value: mood, accent: theme.amberSoft, color: theme.amber }
-      ];
-
-      items.forEach((item, index) => {
-        const x = cardX + 48 + index * (smallW + gap);
-        ctx.save();
-        roundedRect(ctx, x, smallY, smallW, 180, 24);
-        ctx.fillStyle = item.accent;
+      ctx.fillStyle = theme.card;
+      [[sunX - 52, sunY + 34, 32], [sunX - 10, sunY + 18, 42], [sunX + 28, sunY + 36, 26]].forEach(cloud => {
+        ctx.beginPath();
+        ctx.arc(cloud[0], cloud[1], cloud[2], 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
-
-        ctx.fillStyle = item.color;
-        ctx.font = '700 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-        ctx.fillText(item.label, x + 28, smallY + 48);
-        ctx.fillStyle = theme.text;
-        ctx.font = item.value.length > 12
-          ? '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
-          : '800 48px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-        const valueLines = wrapCanvasText(ctx, item.value, smallW - 56).slice(0, 2);
-        valueLines.forEach((line, lineIndex) => {
-          ctx.fillText(line, x + 28, smallY + 104 + lineIndex * 42);
-        });
       });
 
-      const messageY = smallY + 226;
-      if (label !== 'square') {
+      drawSparkle(ctx, cardX + 88, cardY + 120, 12, 'rgba(216,178,114,0.85)');
+      drawSparkle(ctx, cardX + 58, cardY + 168, 8, 'rgba(216,178,114,0.75)');
+
+      ctx.strokeStyle = 'rgba(181,142,94,0.70)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(sunX + 18, sunY + 10);
+      ctx.quadraticCurveTo(sunX + 27, sunY + 2, sunX + 37, sunY + 10);
+      ctx.moveTo(sunX + 40, sunY + 28);
+      ctx.quadraticCurveTo(sunX + 49, sunY + 20, sunX + 59, sunY + 28);
+      ctx.stroke();
+
+      // main heading
+      const headlineY = pillY + pillH + 88;
+      ctx.fillStyle = theme.text;
+      ctx.textAlign = 'center';
+      ctx.font = `${isStory ? '700 88px' : isSquare ? '700 76px' : '700 96px'} Georgia, Times New Roman, serif`;
+      ctx.fillText(headlineCount, cardX + cardW / 2, headlineY);
+
+      ctx.font = `${isStory ? '700 98px' : isSquare ? '700 82px' : '700 106px'} Georgia, Times New Roman, serif`;
+      ctx.fillText('No Contact', cardX + cardW / 2, headlineY + (isSquare ? 100 : 118));
+
+      drawLeafSprig(ctx, cardX + 88, headlineY + 22, 1.35, 'rgba(127,150,112,0.72)', 1);
+      drawLeafSprig(ctx, cardX + cardW - 88, headlineY + 22, 1.35, 'rgba(127,150,112,0.72)', -1);
+
+      // divider heart
+      const dividerY = headlineY + (isSquare ? 150 : 180);
+      ctx.strokeStyle = 'rgba(198,171,131,0.65)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cardX + cardW / 2 - 155, dividerY);
+      ctx.lineTo(cardX + cardW / 2 - 42, dividerY);
+      ctx.moveTo(cardX + cardW / 2 + 42, dividerY);
+      ctx.lineTo(cardX + cardW / 2 + 155, dividerY);
+      ctx.stroke();
+
+      ctx.fillStyle = theme.warm;
+      ctx.font = '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('♥', cardX + cardW / 2, dividerY + 12);
+
+      ctx.fillStyle = theme.muted;
+      ctx.font = `${isStory ? '600 36px' : '600 32px'} system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif`;
+      ctx.fillText(`${stats.currentStreak} days of choosing peace`, cardX + cardW / 2, dividerY + 72);
+
+      // stats
+      const statsTop = dividerY + 120;
+      const gap = 22;
+      const statsAreaW = cardW - innerPad * 2;
+      const statW = (statsAreaW - gap) / 2;
+      const statH = isSquare ? 138 : 150;
+      const cards = [
+        { label: 'Current streak', value: `${stats.currentStreak} day${stats.currentStreak === 1 ? '' : 's'}`, icon: '🔥' },
+        { label: 'Total no-contact days', value: String(stats.total), icon: '🗓' },
+        { label: 'Longest streak', value: `${stats.longest} day${stats.longest === 1 ? '' : 's'}`, icon: '🏆' },
+        { label: 'Today’s mood', value: mood, icon: '☺' }
+      ];
+
+      ctx.textAlign = 'left';
+      cards.forEach((item, index) => {
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+        const x = contentX + col * (statW + gap);
+        const y = statsTop + row * (statH + gap);
+
         ctx.save();
-        roundedRect(ctx, cardX + 48, messageY, cardW - 96, 190, 28);
-        ctx.fillStyle = theme.cardSoft;
+        ctx.shadowColor = 'rgba(0,0,0,0.04)';
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetY = 6;
+        roundedRect(ctx, x, y, statW, statH, 24);
+        ctx.fillStyle = theme.statCard;
         ctx.fill();
         ctx.restore();
 
-        ctx.fillStyle = theme.green;
-        ctx.font = '700 28px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-        ctx.fillText('Today’s reminder', cardX + 80, messageY + 54);
+        ctx.save();
+        roundedRect(ctx, x, y, statW, statH, 24);
+        ctx.strokeStyle = theme.line;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
 
+        const iconCx = x + 74;
+        const iconCy = y + statH / 2;
+        ctx.fillStyle = theme.accentSoft;
+        ctx.beginPath();
+        ctx.arc(iconCx, iconCy, 38, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = theme.accent;
+        ctx.font = '700 36px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI Emoji, Segoe UI Symbol, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(item.icon, iconCx, iconCy + 12);
+
+        ctx.strokeStyle = theme.line;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + 132, y + 28);
+        ctx.lineTo(x + 132, y + statH - 28);
+        ctx.stroke();
+
+        ctx.textAlign = 'left';
         ctx.fillStyle = theme.text;
-        ctx.font = '700 44px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-        drawCanvasMultilineText(ctx, message, cardX + 80, messageY + 122, cardW - 160, 58, 2);
+        ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+        ctx.fillText(item.label, x + 158, y + 58);
 
-        if (label === 'story') {
-          ctx.fillStyle = theme.muted;
-          ctx.font = '600 30px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-          drawCanvasMultilineText(ctx, 'One day at a time. One pause at a time.', cardX + 80, messageY + 300, cardW - 160, 44, 2);
-        }
-      } else {
-        ctx.fillStyle = theme.green;
-        ctx.font = '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-        ctx.fillText(message, cardX + 80, cardY + cardH - 100);
-      }
+        const valueFont = item.value.length > 10 ? '700 46px Georgia, Times New Roman, serif' : '700 52px Georgia, Times New Roman, serif';
+        ctx.font = valueFont;
+        ctx.fillText(item.value, x + 158, y + 116);
+      });
 
+      // quote card
+      const quoteY = statsTop + statH * 2 + gap + 34;
+      const quoteH = isStory ? 190 : 170;
+      roundedRect(ctx, contentX, quoteY, contentW, quoteH, 28);
+      ctx.fillStyle = theme.cardSoft;
+      ctx.fill();
+
+      drawLeafSprig(ctx, contentX + 70, quoteY + 50, 1.45, 'rgba(127,150,112,0.78)', 1);
+
+      ctx.fillStyle = theme.warm;
+      ctx.textAlign = 'center';
+      ctx.font = '700 34px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+      ctx.fillText('♥', cardX + cardW / 2, quoteY + 42);
+
+      ctx.strokeStyle = 'rgba(214,169,106,0.7)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(cardX + cardW / 2 - 44, quoteY + 30);
+      ctx.lineTo(cardX + cardW / 2 - 28, quoteY + 20);
+      ctx.moveTo(cardX + cardW / 2 + 28, quoteY + 20);
+      ctx.lineTo(cardX + cardW / 2 + 44, quoteY + 30);
+      ctx.stroke();
+
+      ctx.fillStyle = theme.text;
+      ctx.font = `${isStory ? '700 52px' : isSquare ? '700 44px' : '700 50px'} Georgia, Times New Roman, serif`;
+      ctx.fillText(message, cardX + cardW / 2, quoteY + (isStory ? 112 : 102));
+
+      ctx.strokeStyle = 'rgba(150,168,125,0.72)';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(cardX + cardW / 2 - 170, quoteY + quoteH - 34);
+      ctx.quadraticCurveTo(cardX + cardW / 2, quoteY + quoteH - 18, cardX + cardW / 2 + 170, quoteY + quoteH - 34);
+      ctx.stroke();
+
+      // footer
+      ctx.save();
+      ctx.translate(cardX, cardY);
+      drawFooterWaves(ctx, cardW, cardH, theme);
+      ctx.restore();
+
+      ctx.textAlign = 'center';
       ctx.fillStyle = theme.muted;
       ctx.font = '600 24px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-      ctx.fillText('Shared from my private local tracker', cardX + 80, cardY + cardH - 44);
+      ctx.fillText('Private progress update', cardX + cardW / 2, cardY + cardH - 52);
+      ctx.fillText(dateLabel, cardX + cardW / 2, cardY + cardH - 86);
 
       latestShareImageDataUrl = canvas.toDataURL('image/png');
       preview.src = latestShareImageDataUrl;
