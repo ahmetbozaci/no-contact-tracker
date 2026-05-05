@@ -1,4 +1,8 @@
 const STORAGE_KEY = 'ncc_local_v1';
+const APP_SCHEMA_VERSION = 2;
+const BACKUP_PREFIX = 'ncc_local_backup_';
+const MAX_AUTO_BACKUPS = 5;
+const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     const moods = ['Calm', 'Strong', 'Sad', 'Anxious', 'Tempted', 'Hopeful'];
     const milestones = [1, 3, 7, 14, 30, 60, 90];
     const quotes = [
@@ -20,6 +24,10 @@ const STORAGE_KEY = 'ncc_local_v1';
 
     function defaultState() {
       return {
+        meta: {
+          schemaVersion: APP_SCHEMA_VERSION,
+          updatedAt: ''
+        },
         username: '',
         checkins: [],
         reflections: {},
@@ -34,15 +42,158 @@ const STORAGE_KEY = 'ncc_local_v1';
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? { ...defaultState(), ...JSON.parse(raw) } : defaultState();
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        const migrated = migrateState(parsed);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+        return migrated;
       } catch {
         return defaultState();
       }
     }
 
-    function saveState() {
+    function saveState({ skipRender = false } = {}) {
+      state = normalizeState({
+        ...state,
+        meta: {
+          ...(state.meta || {}),
+          schemaVersion: APP_SCHEMA_VERSION,
+          updatedAt: new Date().toISOString()
+        }
+      });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      render();
+      if (!skipRender) render();
+    }
+
+    function migrateState(rawState) {
+      const incomingVersion = Number(rawState?.meta?.schemaVersion || rawState?.schemaVersion || 1);
+      let nextState = rawState && typeof rawState === 'object' ? { ...rawState } : defaultState();
+
+      // Before changing an older saved structure, keep a local backup.
+      // This protects users when the website is updated with new features later.
+      if (incomingVersion < APP_SCHEMA_VERSION) {
+        createLocalBackup(`Before automatic migration from v${incomingVersion} to v${APP_SCHEMA_VERSION}`, nextState);
+      }
+
+      // v2: add explicit metadata and normalize relapse records with breakDate.
+      if (incomingVersion < 2) {
+        nextState.meta = {
+          schemaVersion: 2,
+          migratedAt: new Date().toISOString(),
+          previousSchemaVersion: incomingVersion
+        };
+        nextState.relapses = Array.isArray(nextState.relapses)
+          ? nextState.relapses.map(item => ({
+              ...item,
+              breakDate: item?.breakDate || (item?.date ? todayKey(new Date(item.date)) : '')
+            }))
+          : [];
+      }
+
+      return normalizeState(nextState);
+    }
+
+    function normalizeState(data) {
+      const base = defaultState();
+      const safe = data && typeof data === 'object' ? data : {};
+      const merged = { ...base, ...safe };
+
+      merged.meta = {
+        ...base.meta,
+        ...(safe.meta && typeof safe.meta === 'object' ? safe.meta : {}),
+        schemaVersion: APP_SCHEMA_VERSION
+      };
+
+      merged.username = typeof merged.username === 'string' ? merged.username : '';
+      merged.reasons = typeof merged.reasons === 'string' ? merged.reasons : '';
+      merged.reminderTime = typeof merged.reminderTime === 'string' ? merged.reminderTime : '';
+      merged.reminderLastShown = typeof merged.reminderLastShown === 'string' ? merged.reminderLastShown : '';
+
+      merged.checkins = Array.isArray(merged.checkins)
+        ? [...new Set(merged.checkins.filter(isDateKey))].sort()
+        : [];
+
+      merged.reflections = merged.reflections && typeof merged.reflections === 'object' && !Array.isArray(merged.reflections)
+        ? Object.fromEntries(Object.entries(merged.reflections).filter(([key]) => isDateKey(key)))
+        : {};
+
+      merged.unsentMessages = Array.isArray(merged.unsentMessages)
+        ? merged.unsentMessages.filter(item => item && typeof item === 'object').map(item => ({
+            text: typeof item.text === 'string' ? item.text : '',
+            intensity: Number(item.intensity) || 5,
+            date: typeof item.date === 'string' ? item.date : new Date().toISOString()
+          }))
+        : [];
+
+      merged.relapses = Array.isArray(merged.relapses)
+        ? merged.relapses.filter(item => item && typeof item === 'object').map(item => ({
+            what: typeof item.what === 'string' ? item.what : '',
+            trigger: typeof item.trigger === 'string' ? item.trigger : '',
+            breakDate: isDateKey(item.breakDate) ? item.breakDate : (item.date ? todayKey(new Date(item.date)) : ''),
+            date: typeof item.date === 'string' ? item.date : new Date().toISOString()
+          }))
+        : [];
+
+      return merged;
+    }
+
+    function isDateKey(value) {
+      return typeof value === 'string' && DATE_KEY_PATTERN.test(value);
+    }
+
+    function getBackupKeys() {
+      return Object.keys(localStorage)
+        .filter(key => key.startsWith(BACKUP_PREFIX))
+        .sort();
+    }
+
+    function createLocalBackup(reason, data = state) {
+      try {
+        const key = `${BACKUP_PREFIX}${new Date().toISOString()}`;
+        const backup = {
+          reason,
+          createdAt: new Date().toISOString(),
+          appSchemaVersion: APP_SCHEMA_VERSION,
+          data
+        };
+        localStorage.setItem(key, JSON.stringify(backup));
+        cleanupOldBackups();
+        return key;
+      } catch {
+        return '';
+      }
+    }
+
+    function cleanupOldBackups() {
+      const keys = getBackupKeys();
+      const extra = keys.length - MAX_AUTO_BACKUPS;
+      if (extra <= 0) return;
+      keys.slice(0, extra).forEach(key => localStorage.removeItem(key));
+    }
+
+    function restoreLatestBackup() {
+      const keys = getBackupKeys();
+      const latestKey = keys[keys.length - 1];
+      if (!latestKey) return showToast('No backup found');
+      if (!confirm('Restore the latest local backup? Current data will be backed up first.')) return;
+
+      try {
+        const currentBackupKey = createLocalBackup('Before restoring latest backup');
+        const backup = JSON.parse(localStorage.getItem(latestKey));
+        state = migrateState(backup.data || backup);
+        saveState();
+        showBackupNotice(`Latest backup restored. A backup of your previous current data was also saved${currentBackupKey ? '.' : ' if storage allowed it.'}`);
+        showToast('Backup restored');
+      } catch {
+        showToast('Could not restore backup');
+      }
+    }
+
+    function showBackupNotice(message) {
+      const notice = document.getElementById('backupNotice');
+      if (!notice) return;
+      notice.textContent = message;
+      notice.classList.remove('hidden');
     }
 
     function todayKey(date = new Date()) {
@@ -363,7 +514,8 @@ const STORAGE_KEY = 'ncc_local_v1';
         try {
           const data = JSON.parse(reader.result);
           if (!data || typeof data !== 'object') throw new Error('Invalid file');
-          state = { ...defaultState(), ...data };
+          createLocalBackup('Before importing JSON file');
+          state = migrateState(data);
           saveState();
           showToast('Data imported');
         } catch {
@@ -444,8 +596,16 @@ const STORAGE_KEY = 'ncc_local_v1';
     });
     document.getElementById('exportBtn').addEventListener('click', exportData);
     document.getElementById('importFile').addEventListener('change', e => importData(e.target.files[0]));
+    document.getElementById('manualBackupBtn').addEventListener('click', () => {
+      const key = createLocalBackup('Manual backup');
+      if (!key) return showToast('Could not create backup');
+      showBackupNotice('Manual backup created on this device. You can restore the latest backup from here.');
+      showToast('Backup created');
+    });
+    document.getElementById('restoreLatestBackupBtn').addEventListener('click', restoreLatestBackup);
     document.getElementById('clearTodayBtn').addEventListener('click', () => {
       if (!confirm('Clear today’s check-in and reflection?')) return;
+      createLocalBackup('Before clearing today');
       const today = todayKey();
       state.checkins = state.checkins.filter(d => d !== today);
       delete state.reflections[today];
@@ -453,10 +613,12 @@ const STORAGE_KEY = 'ncc_local_v1';
       showToast('Today cleared');
     });
     document.getElementById('resetAllBtn').addEventListener('click', () => {
-      if (!confirm('Reset all local data? This cannot be undone.')) return;
+      if (!confirm('Reset all local data? A backup will be created first, but reset cannot be undone if browser storage is cleared.')) return;
+      createLocalBackup('Before resetting all data');
       localStorage.removeItem(STORAGE_KEY);
       state = defaultState();
       render();
+      showToast('Reset complete');
     });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEmergency(); });
 

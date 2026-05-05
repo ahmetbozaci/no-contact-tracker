@@ -1,0 +1,36 @@
+# No Contact Challenge — Safe Update Version
+
+This version keeps the app frontend-only and localStorage-only, but adds a safer data layer for future website updates.
+
+## Important rule
+Do not change `STORAGE_KEY = 'ncc_local_v1'` unless you intentionally want to start a new empty data store. Keeping this key is what lets existing users keep their progress after an update.
+
+## What was added
+- `APP_SCHEMA_VERSION` for future data structure changes.
+- `migrateState()` to upgrade old saved data safely.
+- `normalizeState()` to protect against missing or malformed fields.
+- Automatic local backup before migration.
+- Manual backup button in Settings.
+- Restore latest backup button in Settings.
+- Backup before import, reset, and clear-today actions.
+
+## Future feature workflow
+When you add a new feature:
+1. Add the new field to `defaultState()`.
+2. Increase `APP_SCHEMA_VERSION` by 1 only if the saved data structure changed.
+3. Add a migration block inside `migrateState()` for the new version.
+4. Keep all old fields unless you safely migrate them.
+5. Test with old localStorage data before publishing.
+
+Example:
+```js
+// If you add state.newFeature = [] in v3:
+const APP_SCHEMA_VERSION = 3;
+
+if (incomingVersion < 3) {
+  nextState.newFeature = Array.isArray(nextState.newFeature) ? nextState.newFeature : [];
+}
+```
+
+## Still recommended
+Users should still export JSON sometimes. Browser storage can be cleared by device/browser settings, private mode, or reinstalling the browser.

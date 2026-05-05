@@ -178,10 +178,13 @@
 <button class="soft-btn" id="exportBtn" type="button">Export JSON</button>
 <label class="ghost-btn" for="importFile" style="cursor:pointer;margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Import JSON</label>
 <input accept="application/json" class="hidden" id="importFile" type="file"/>
+<button class="ghost-btn" id="manualBackupBtn" type="button">Create backup</button>
+<button class="ghost-btn" id="restoreLatestBackupBtn" type="button">Restore latest backup</button>
 <button class="ghost-btn" id="clearTodayBtn" type="button">Clear today only</button>
 <button class="danger-btn" id="resetAllBtn" type="button">Reset all data</button>
 </div>
-<div class="danger-note" style="margin-top:12px">Export regularly if this progress is important to you. localStorage can be cleared by browser/device changes.</div>
+<div id="backupNotice" class="notice hidden" style="margin-top:12px"></div>
+<div class="danger-note" style="margin-top:12px">Automatic backups are saved before future data migrations. Export regularly too, because browser/device changes can still clear localStorage.</div>
 </div>
 </div>
 </section>
