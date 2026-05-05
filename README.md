@@ -45,3 +45,20 @@ Users should still export JSON sometimes. Browser storage can be cleared by devi
 
 ## Data safety note for v3
 This update keeps `STORAGE_KEY = 'ncc_local_v1'` and upgrades saved data through `migrateState()`. Existing users should keep their local progress after replacing the website files.
+
+
+## Next feature upgrade
+Added frontend-only, localStorage-only features:
+- Today plan checklist
+- Social media boundary tracker
+- Contact cost reminder
+- Safe people list
+- Privacy mode
+- Progress insights
+
+All features use the existing storage key so existing user data is preserved.
+
+
+## Today checklist scope fix
+The Today plan and Social media boundaries blocks are intentionally placed inside the `#today` section only.
+Do not place those blocks between sections; anything outside `.section` will remain visible across every tab.

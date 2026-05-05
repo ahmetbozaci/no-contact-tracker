@@ -251,3 +251,76 @@
 .meta-line { color: var(--muted); font-size: 12px; margin-top: 4px; }
 .grounding-card { background: linear-gradient(180deg, var(--card-soft), #fff); }
 .letter-body-preview { white-space: pre-wrap; color: var(--muted); margin: 8px 0 0; font-size: 14px; }
+
+
+/* Next-feature upgrade: checklists, insights, privacy mode */
+.check-list,
+.today-plan-list,
+.boundary-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.check-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.check-item input[type="checkbox"] {
+  width: auto;
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.check-item span {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.check-item.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.insight-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.insight-card strong {
+  display: block;
+  font-size: 23px;
+  letter-spacing: -.03em;
+}
+
+.insight-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.privacy-on .sensitive {
+  filter: blur(7px);
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (min-width: 760px) {
+  .insights-grid {
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}

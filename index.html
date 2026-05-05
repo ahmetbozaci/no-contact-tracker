@@ -75,7 +75,25 @@
 <p class="subtitle" id="dailyQuote"></p>
 </div>
 </div>
+<!-- Today-only daily boundary tools. Keep this block inside #today. -->
+<div class="grid-2">
+<div class="card">
+<h2>Today plan</h2>
+<p class="subtitle">Small boundaries for today. Customize the list from Settings.</p>
+<div class="today-plan-list" id="todayPlanList"></div>
+<div class="actions">
+<button class="ghost-btn" id="resetTodayPlanBtn" type="button">Reset today</button>
+</div>
+</div>
+<div class="card">
+<h2>Social media boundaries</h2>
+<p class="subtitle">No-contact also means protecting yourself from small checks that reopen the loop.</p>
+<div class="boundary-list" id="boundaryList"></div>
+</div>
+</div>
 </section>
+
+
 <section class="section" id="progress">
 <div class="hero">
 <div>
@@ -88,6 +106,12 @@
 <div class="milestones" id="milestones"></div>
 </div>
 </div>
+<div class="card">
+<h2>Progress insights</h2>
+<p class="subtitle">Private patterns from your local data. These are simple calculations, not judgment.</p>
+<div class="insights-grid" id="progressInsights"></div>
+</div>
+
 <div class="grid-2">
 <div class="card">
 <div class="calendar-head">
@@ -117,6 +141,26 @@
 <div class="actions"><button class="soft-btn" id="saveReasonsBtn" type="button">Save reasons</button></div>
 </div>
 </div>
+<div class="grid-2">
+<div class="card">
+<h2>Contact cost reminder</h2>
+<p class="subtitle">Write what usually happens after contact, so Emergency mode can remind you before the urge takes over.</p>
+<textarea id="contactCostText" placeholder="Example: I wait for replies, lose sleep, feel anxious again…"></textarea>
+<div class="actions"><button class="soft-btn" id="saveContactCostBtn" type="button">Save reminder</button></div>
+</div>
+<div class="card">
+<h2>Safe people</h2>
+<p class="subtitle">People you can contact instead. Stored only on this device.</p>
+<div class="form-row">
+<input id="safePersonName" type="text" placeholder="Name" />
+<input id="safePersonContact" type="text" placeholder="Phone, Discord, Instagram, or note" />
+<input id="safePersonNote" type="text" placeholder="Why they are safe for me" />
+<button class="soft-btn" id="addSafePersonBtn" type="button">Add safe person</button>
+</div>
+<div class="list" id="safePeopleList" style="margin-top:14px"></div>
+</div>
+</div>
+
 <div class="card">
 <h2>Relapse / reset support</h2>
 <p class="subtitle">If you contacted them, checked their profile, or replied, this is not shame. It is information.</p>
@@ -214,6 +258,26 @@
 </div>
 <div class="grid-2">
 <div class="card">
+<h2>Privacy mode</h2>
+<p class="subtitle">Hide sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>
+<div class="actions">
+<button class="soft-btn" id="privacyModeToggle" type="button">Enable privacy mode</button>
+</div>
+<div id="privacyNotice" class="notice hidden" style="margin-top:12px"></div>
+</div>
+<div class="card">
+<h2>Customize today plan</h2>
+<p class="subtitle">One item per line. These become your daily checklist.</p>
+<textarea id="todayPlanEditor" placeholder="Don’t check their profile&#10;Don’t message&#10;Take a walk"></textarea>
+<div class="actions">
+<button class="soft-btn" id="saveTodayPlanItemsBtn" type="button">Save checklist</button>
+<button class="ghost-btn" id="restoreDefaultPlanBtn" type="button">Restore defaults</button>
+</div>
+</div>
+</div>
+
+<div class="grid-2">
+<div class="card">
 <h2>Reminder / alarm</h2>
 <p class="subtitle">Browser notifications can be limited on iPhone/Safari. For reliability, also set a phone alarm.</p>
 <div class="form-row">
@@ -272,6 +336,15 @@
 <p class="subtitle" id="groundingText">Name 5 things you can see. Then breathe slowly.</p>
 <div class="actions"><button class="ghost-btn" id="nextGroundingBtn" type="button">Next grounding step</button></div>
 </div>
+<div class="soft-card" style="margin-top:14px">
+<h3 style="margin-top:0">Before contacting them, remember</h3>
+<p class="subtitle" id="contactCostPreview"></p>
+</div>
+<div class="soft-card" style="margin-top:14px">
+<h3 style="margin-top:0">Contact someone safe instead</h3>
+<div class="list" id="safePeoplePreview"></div>
+</div>
+
 <div class="form-row">
 <label for="urgeIntensity">Urge intensity: <span id="urgeIntensityValue">5</span>/10</label>
 <input id="urgeIntensity" max="10" min="1" type="range" value="5"/>
