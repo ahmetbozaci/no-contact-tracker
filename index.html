@@ -518,13 +518,32 @@
       return [...new Set(state.checkins)].sort();
     }
 
+    function relapseDayKeys() {
+      return state.relapses
+        .map(r => r?.breakDate || (r?.date ? todayKey(new Date(r.date)) : ''))
+        .filter(Boolean)
+        .sort();
+    }
+
+    function latestRelapseDayKey() {
+      const days = relapseDayKeys();
+      return days.length ? days[days.length - 1] : '';
+    }
+
     function getStats() {
       const days = uniqueSortedCheckins();
       const set = new Set(days);
+      const relapseSet = new Set(relapseDayKeys());
+      const latestRelapse = latestRelapseDayKey();
       const today = todayKey();
       let current = 0;
+
+      // Current streak should start after the latest relapse/reset.
+      // A relapse today makes the current streak 0 until a future check-in.
       let cursor = parseDateKey(set.has(today) ? today : todayKey(new Date(Date.now() - 86400000)));
       while (set.has(todayKey(cursor))) {
+        const key = todayKey(cursor);
+        if (latestRelapse && key <= latestRelapse) break;
         current++;
         cursor.setDate(cursor.getDate() - 1);
       }
@@ -534,6 +553,11 @@
       let prev = null;
       days.forEach(key => {
         const currentDate = parseDateKey(key);
+        if (relapseSet.has(key)) {
+          run = 0;
+          prev = null;
+          return;
+        }
         if (prev) {
           const diff = Math.round((currentDate - prev) / 86400000);
           run = diff === 1 ? run + 1 : 1;
@@ -826,11 +850,27 @@
     document.getElementById('nextMonth').addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); });
     document.getElementById('saveReasonsBtn').addEventListener('click', () => { state.reasons = document.getElementById('reasonsText').value.trim(); saveState(); showToast('Reasons saved'); });
     document.getElementById('saveRelapseBtn').addEventListener('click', () => {
-      state.relapses.unshift({ what: document.getElementById('relapseWhat').value.trim(), trigger: document.getElementById('relapseTrigger').value.trim(), date: new Date().toISOString() });
+      const today = todayKey();
+      const what = document.getElementById('relapseWhat').value.trim();
+      const trigger = document.getElementById('relapseTrigger').value.trim();
+
+      state.relapses.unshift({
+        what,
+        trigger,
+        breakDate: today,
+        date: new Date().toISOString()
+      });
+
+      // If today was already checked in, remove it because today is no longer a successful no-contact day.
+      state.checkins = state.checkins.filter(d => d !== today);
+      delete state.reflections[today];
+      selectedMood = null;
+
       document.getElementById('relapseWhat').value = '';
       document.getElementById('relapseTrigger').value = '';
       document.getElementById('relapseMessage').classList.remove('hidden');
       saveState();
+      showToast('Restart saved gently');
     });
     document.getElementById('closeEmergencyBtn').addEventListener('click', closeEmergency);
     document.getElementById('emergencyModal').addEventListener('click', e => { if (e.target.id === 'emergencyModal') closeEmergency(); });
