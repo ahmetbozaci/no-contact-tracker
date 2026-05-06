@@ -9,6 +9,7 @@
 <link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
+<a class="skip-link" href="#today">Skip to main content</a>
 <div class="setup-screen hidden" id="setupScreen">
 <div class="card setup-card">
 <div class="tag"><span class="dot"></span> Private local tracker</div>
@@ -28,7 +29,7 @@
 <div class="topbar">
 <div class="brand"><div class="leaf"></div><span>No Contact Challenge</span></div>
 <nav aria-label="Main navigation" class="desktop-nav">
-<button class="nav-btn active" data-tab="today" type="button">Today</button>
+<button class="nav-btn active" data-tab="today" type="button" aria-current="page">Today</button>
 <button class="nav-btn" data-tab="progress" type="button">Review</button>
 <button class="nav-btn" data-tab="emergency" type="button">Help</button>
 <button class="nav-btn" data-tab="share" type="button">Share</button>
@@ -37,7 +38,7 @@
 <div class="header-status"><span class="privacy-indicator hidden" id="privacyIndicator">Privacy on</span><div class="user-chip" id="userChip"></div></div>
 </div>
 </header>
-<main class="app-shell">
+<main class="app-shell" id="mainContent" tabindex="-1">
 <!-- Tab sections -->
 <section class="section active" id="today">
 <div class="hero">
@@ -310,7 +311,7 @@
 <p class="subtitle">Manage privacy, reminders, backups, and saved progress. Nothing is sent anywhere.</p>
 </div>
 <div class="card">
-<h2>Profile</h2>
+<h2>1. Profile</h2>
 <div class="form-row">
 <input id="editName" maxlength="40" type="text"/>
 <button class="soft-btn" id="saveNameBtn" type="button">Save username</button>
@@ -319,7 +320,7 @@
 </div>
 <div class="grid-2">
 <div class="card">
-<h2>Quick privacy</h2>
+<h2>2. Privacy</h2>
 <p class="subtitle">Blur sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>
 <div class="actions">
 <button class="soft-btn" id="privacyModeToggle" type="button">Enable privacy mode</button>
@@ -329,8 +330,8 @@
 <details class="card disclosure-card">
 <summary>
 <span>
-<strong>Customize today plan</strong>
-<small>Edit the checklist shown on Today</small>
+<strong>3. Today checklist</strong>
+<small>Edit the daily checklist shown on Today</small>
 </span>
 </summary>
 <p class="subtitle">One item per line. These become your daily checklist.</p>
@@ -344,7 +345,7 @@
 
 
 <div class="card data-safety-card" id="dataSafetySummary">
-<h2>Data safety</h2>
+<h2>4. Backup reminder</h2>
 <p class="subtitle">Your progress is stored only on this device. Export a backup file when this progress matters to you.</p>
 <div class="data-safety-grid">
 <div><strong id="lastExportStatus">Not exported yet</strong><span>Last export</span></div>
@@ -359,7 +360,7 @@
 <details class="card disclosure-card" open>
 <summary>
 <span>
-<strong>Backup</strong>
+<strong>5. Backup</strong>
 <small>Save or restore your progress</small>
 </span>
 </summary>
@@ -376,11 +377,11 @@
 <details class="card disclosure-card danger-zone">
 <summary>
 <span>
-<strong>Reset options</strong>
+<strong>6. Reset options</strong>
 <small>Only use these when you are sure</small>
 </span>
 </summary>
-<p class="subtitle">These actions change your saved progress on this device. A local backup is created first when possible.</p>
+<p class="subtitle">These actions can remove saved progress from this device. Use them only when you are sure.</p>
 <div class="actions">
 <button class="ghost-btn" id="clearTodayBtn" type="button">Clear today only</button>
 <button class="danger-btn" id="resetAllBtn" type="button">Reset all progress</button>
@@ -390,11 +391,11 @@
 </section>
 </main>
 <nav aria-label="Mobile navigation" class="bottom-nav">
-<button class="active" data-tab="today" type="button"><span class="ico">🌿</span>Today</button>
-<button data-tab="progress" type="button"><span class="ico">📅</span>Progress</button>
-<button data-tab="emergency" type="button"><span class="ico">🫶</span>Help</button>
-<button data-tab="share" type="button"><span class="ico">↗️</span>Share</button>
-<button data-tab="settings" type="button"><span class="ico">⚙️</span>Settings</button>
+<button class="active" data-tab="today" type="button" aria-current="page"><span class="ico" aria-hidden="true">🌿</span>Today</button>
+<button data-tab="progress" type="button"><span class="ico" aria-hidden="true">📅</span>Progress</button>
+<button data-tab="emergency" type="button"><span class="ico" aria-hidden="true">🫶</span>Help</button>
+<button data-tab="share" type="button"><span class="ico" aria-hidden="true">↗️</span>Share</button>
+<button data-tab="settings" type="button"><span class="ico" aria-hidden="true">⚙️</span>Settings</button>
 </nav>
 </div>
 <div aria-labelledby="emergencyTitle" aria-modal="true" class="modal-backdrop" id="emergencyModal" role="dialog">
@@ -404,7 +405,7 @@
 <h2 id="emergencyTitle" style="margin:0">Start with a pause</h2>
 <p class="subtitle">You only need to get through this wave. Write here, breathe, and wait before acting.</p>
 </div>
-<button aria-label="Close" class="icon-btn" id="closeEmergencyBtn" type="button">×</button>
+<button aria-label="Close help window" class="icon-btn" id="closeEmergencyBtn" type="button">×</button>
 </div>
 <div class="emergency-steps">
 <div class="emergency-step"><strong>1</strong><span>Breathe first</span></div>

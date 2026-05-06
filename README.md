@@ -141,3 +141,14 @@ The progress image generator in the Share section was redesigned to produce a ca
 
 ## Share image streak fix
 Fixed the progress image so it uses the correct stats field names when rendering the current streak.
+
+
+## Settings simplification and accessibility polish
+No new app features were added. This pass improves usability:
+- Settings labels are ordered and easier to scan.
+- Reset options remain separated and closed by default.
+- Added skip link for keyboard users.
+- Added visible focus styles.
+- Tab navigation updates `aria-current`.
+- Emergency modal focus is managed more cleanly.
+- Added reduced-motion support.

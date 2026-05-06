@@ -31,6 +31,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
     let latestShareImageDataUrl = '';
     let selectedUrgeTriggers = new Set();
     let groundingStepIndex = 0;
+    let lastFocusedBeforeEmergency = null;
 
     function defaultState() {
       return {
@@ -319,7 +320,12 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
     function switchTab(tab) {
       document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === tab));
-      document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('[data-tab]').forEach(b => {
+        const isActive = b.dataset.tab === tab;
+        b.classList.toggle('active', isActive);
+        if (isActive) b.setAttribute('aria-current', 'page');
+        else b.removeAttribute('aria-current');
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (tab === 'share') {
         renderShareText();
@@ -1041,12 +1047,18 @@ ${message}`;
     }
 
     function openEmergency() {
+      lastFocusedBeforeEmergency = document.activeElement;
       document.getElementById('reasonsPreview').textContent = state.reasons || 'No reasons saved yet. Add one or two gentle reasons in Help so they are ready during an urge.';
-      document.getElementById('emergencyModal').classList.add('open');
+      const modal = document.getElementById('emergencyModal');
+      modal.classList.add('open');
+      document.getElementById('closeEmergencyBtn').focus();
     }
 
     function closeEmergency() {
       document.getElementById('emergencyModal').classList.remove('open');
+      if (lastFocusedBeforeEmergency && typeof lastFocusedBeforeEmergency.focus === 'function') {
+        lastFocusedBeforeEmergency.focus();
+      }
     }
 
     function updateTimerDisplay() {
