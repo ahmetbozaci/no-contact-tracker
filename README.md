@@ -137,3 +137,7 @@ The progress image generator in the Share section was redesigned to produce a ca
 - calm quote panel
 - decorative nature-inspired accents
 - still generated locally in-browser with canvas
+
+
+## Share image streak fix
+Fixed the progress image so it uses the correct stats field names when rendering the current streak.

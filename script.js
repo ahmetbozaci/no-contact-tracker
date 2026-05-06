@@ -709,7 +709,8 @@ ${message}`;
       if (!preview || !state.username) return;
 
       const { username, stats, mood, dateLabel, message } = getShareData();
-      const headlineCount = stats.currentStreak >= 7 ? `${Math.floor(stats.currentStreak / 7)} Week${Math.floor(stats.currentStreak / 7) === 1 ? '' : 's'}` : `${stats.currentStreak} Day${stats.currentStreak === 1 ? '' : 's'}`;
+      const streakDays = Number(stats.current || 0);
+      const headlineCount = streakDays >= 7 ? `${Math.floor(streakDays / 7)} Week${Math.floor(streakDays / 7) === 1 ? '' : 's'}` : `${streakDays} Day${streakDays === 1 ? '' : 's'}`;
       const sizeInfo = getShareCanvasSize();
       const { width, height } = sizeInfo;
       const isStory = sizeInfo.label === 'story';
@@ -853,7 +854,7 @@ ${message}`;
 
       ctx.fillStyle = theme.muted;
       ctx.font = `${isStory ? '600 36px' : '600 32px'} system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif`;
-      ctx.fillText(`${stats.currentStreak} days of choosing peace`, cardX + cardW / 2, dividerY + 72);
+      ctx.fillText(`${streakDays} day${streakDays === 1 ? '' : 's'} of choosing peace`, cardX + cardW / 2, dividerY + 72);
 
       // stats
       const statsTop = dividerY + 120;
@@ -862,9 +863,9 @@ ${message}`;
       const statW = (statsAreaW - gap) / 2;
       const statH = isSquare ? 138 : 150;
       const cards = [
-        { label: 'Current streak', value: `${stats.currentStreak} day${stats.currentStreak === 1 ? '' : 's'}`, icon: '🔥' },
-        { label: 'Total no-contact days', value: String(stats.total), icon: '🗓' },
-        { label: 'Longest streak', value: `${stats.longest} day${stats.longest === 1 ? '' : 's'}`, icon: '🏆' },
+        { label: 'Current streak', value: `${streakDays} day${streakDays === 1 ? '' : 's'}`, icon: '🔥' },
+        { label: 'Total no-contact days', value: String(Number(stats.total || 0)), icon: '🗓' },
+        { label: 'Longest streak', value: `${Number(stats.longest || 0)} day${Number(stats.longest || 0) === 1 ? '' : 's'}`, icon: '🏆' },
         { label: 'Today’s mood', value: mood, icon: '☺' }
       ];
 
