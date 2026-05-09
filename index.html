@@ -21,9 +21,9 @@
 <input autocomplete="nickname" id="setupName" maxlength="40" placeholder="Example: Ahmet" required="" type="text"/>
 </div>
 <div>
-<label for="setupPriorDays">Already completed no-contact days</label>
-<input id="setupPriorDays" inputmode="numeric" min="0" max="5000" placeholder="Example: 21" type="number"/>
-<p class="field-help">Optional. We’ll add these days up to yesterday, so you can still check in for today.</p>
+<label for="setupPriorDays">Did you start no-contact before this app?</label>
+<input id="setupPriorDays" inputmode="numeric" min="0" max="5000" placeholder="Example: 21 days" type="number"/>
+<p class="field-help">Optional. If you were already no-contact before using this app, enter how many days you completed. We’ll continue your progress from there, and today will still be available for check-in.</p>
 </div>
 <details class="setup-optional">
 <summary>Optional support setup</summary>
@@ -97,6 +97,28 @@
 </div>
 </div>
 <div class="stats" id="statsGrid"></div>
+<div class="card missed-days-card hidden" id="missedDaysCard">
+<div class="missed-days-header">
+<div>
+<h2>Missing days</h2>
+<p class="subtitle" id="missedDaysText">You were away for a few days. That’s okay. What happened during those days?</p>
+</div>
+<span class="missed-days-count" id="missedDaysCount">0</span>
+</div>
+<div class="actions">
+<button class="soft-btn" id="missedStayedBtn" type="button">I stayed no-contact</button>
+<button class="ghost-btn" id="missedContactedBtn" type="button">I contacted them</button>
+<button class="ghost-btn" id="missedSkipBtn" type="button">I’m not sure / skip for now</button>
+</div>
+<div class="missed-relapse-form hidden" id="missedRelapseForm">
+<p class="subtitle">You are not back to zero. You are learning your pattern.</p>
+<div class="form-row">
+<textarea id="missedRelapseWhat" placeholder="What happened?"></textarea>
+<input id="missedRelapseTrigger" placeholder="What triggered it?" type="text"/>
+<button class="danger-btn" id="missedRelapseSaveBtn" type="button">Save and restart gently</button>
+</div>
+</div>
+</div>
 
 <details class="card disclosure-card welcome-guide" id="firstTimeGuide" open>
 <summary>

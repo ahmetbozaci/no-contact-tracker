@@ -12,7 +12,15 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       'Name 2 things you can smell. Relax your jaw and shoulders.',
       'Name 1 kind thing you can do for yourself in the next 5 minutes.'
     ];
-    const milestones = [1, 3, 7, 14, 30, 60, 90];
+    const milestoneChapters = [
+      { day: 1, icon: '🌱', title: 'First brave pause', note: 'You made the first choice for peace.' },
+      { day: 3, icon: '🌿', title: 'The urge wave passed', note: 'You are learning that urges rise and fall.' },
+      { day: 7, icon: '🍃', title: 'One full week of peace', note: 'A week of choosing yourself is real progress.' },
+      { day: 14, icon: '🌼', title: 'Building distance', note: 'Space is starting to protect your healing.' },
+      { day: 30, icon: '🌳', title: 'A new rhythm is forming', note: 'No-contact is becoming part of your life.' },
+      { day: 60, icon: '🕊️', title: 'Peace feels more familiar', note: 'You have practiced calm again and again.' },
+      { day: 90, icon: '✨', title: 'Proof of consistency', note: 'This is not the end of healing. It is proof of your strength.' }
+    ];
     const quotes = [
       'You do not need to reopen the wound to prove it hurt.',
       'Peace is built by small choices repeated quietly.',
@@ -50,7 +58,9 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         shareImageSize: 'portrait',
         reminderTime: '',
         reminderLastShown: '',
-        emergencyRegion: ''
+        emergencyRegion: '',
+        missedDaysResponseKey: '',
+        currentStreakResetDate: ''
       };
     }
 
@@ -133,6 +143,8 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       merged.reasons = typeof merged.reasons === 'string' ? merged.reasons : '';
       merged.reminderTime = typeof merged.reminderTime === 'string' ? merged.reminderTime : '';
       merged.reminderLastShown = typeof merged.reminderLastShown === 'string' ? merged.reminderLastShown : '';
+      merged.missedDaysResponseKey = typeof merged.missedDaysResponseKey === 'string' ? merged.missedDaysResponseKey : '';
+      merged.currentStreakResetDate = isDateKey(merged.currentStreakResetDate) ? merged.currentStreakResetDate : '';
 
       merged.checkins = Array.isArray(merged.checkins)
         ? [...new Set(merged.checkins.filter(isDateKey))].sort()
@@ -265,6 +277,93 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       return dates;
     }
 
+    function addDaysToDateKey(key, days) {
+      const date = parseDateKey(key);
+      date.setDate(date.getDate() + days);
+      return todayKey(date);
+    }
+
+    function getMissedDaysInfo() {
+      const checkins = uniqueSortedCheckins();
+      if (!checkins.length) return null;
+
+      const lastCheckin = checkins[checkins.length - 1];
+      const today = todayKey();
+      if (lastCheckin >= today) return null;
+
+      const missing = [];
+      let cursor = addDaysToDateKey(lastCheckin, 1);
+
+      while (cursor < today) {
+        missing.push(cursor);
+        cursor = addDaysToDateKey(cursor, 1);
+      }
+
+      if (!missing.length) return null;
+
+      const rangeKey = `${missing[0]}_${missing[missing.length - 1]}`;
+      if (state.missedDaysResponseKey === rangeKey) return null;
+
+      return {
+        days: missing,
+        count: missing.length,
+        start: missing[0],
+        end: missing[missing.length - 1],
+        rangeKey
+      };
+    }
+
+    function resolveMissedDaysAsNoContact() {
+      const info = getMissedDaysInfo();
+      if (!info) return;
+
+      state.checkins = [...new Set([...state.checkins, ...info.days])].sort();
+      state.missedDaysResponseKey = info.rangeKey;
+      saveState();
+      showToast('Those days were added. You kept choosing peace.');
+    }
+
+    function showMissedRelapseForm() {
+      const form = document.getElementById('missedRelapseForm');
+      if (form) form.classList.remove('hidden');
+    }
+
+    function saveMissedRelapse() {
+      const info = getMissedDaysInfo();
+      if (!info) return;
+
+      const what = document.getElementById('missedRelapseWhat')?.value.trim() || '';
+      const trigger = document.getElementById('missedRelapseTrigger')?.value.trim() || '';
+
+      const breakDate = info.end;
+
+      state.relapses.unshift({
+        what,
+        trigger,
+        breakDate,
+        date: new Date().toISOString()
+      });
+
+      // A restart should reset visible progress even if earlier days were backfilled during setup.
+      resetProgressAfterContact(breakDate);
+      state.missedDaysResponseKey = info.rangeKey;
+
+      document.getElementById('missedRelapseWhat').value = '';
+      document.getElementById('missedRelapseTrigger').value = '';
+      document.getElementById('missedRelapseForm').classList.add('hidden');
+
+      saveState();
+      showToast('You are not back to zero. You are learning your pattern.');
+    }
+
+    function skipMissedDaysPrompt() {
+      const info = getMissedDaysInfo();
+      if (!info) return;
+      state.missedDaysResponseKey = info.rangeKey;
+      saveState();
+      showToast('Skipped for now');
+    }
+
     function escapeHtml(text = '') {
       return String(text).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
     }
@@ -280,6 +379,20 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         .sort();
     }
 
+    function resetProgressAfterContact(dateKey) {
+      if (!isDateKey(dateKey)) return;
+
+      // Restart means visible progress starts again from zero.
+      // This avoids confusion when the user added prior no-contact days during setup.
+      state.currentStreakResetDate = dateKey;
+      state.checkins = [];
+      state.reflections = {};
+
+      if (typeof selectedMood !== 'undefined') {
+        selectedMood = null;
+      }
+    }
+
     function latestRelapseDayKey() {
       const days = relapseDayKeys();
       return days.length ? days[days.length - 1] : '';
@@ -290,15 +403,17 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       const set = new Set(days);
       const relapseSet = new Set(relapseDayKeys());
       const latestRelapse = latestRelapseDayKey();
+      const explicitReset = isDateKey(state.currentStreakResetDate) ? state.currentStreakResetDate : '';
+      const streakResetDate = [latestRelapse, explicitReset].filter(Boolean).sort().pop() || '';
       const today = todayKey();
       let current = 0;
 
-      // Current streak should start after the latest relapse/reset.
-      // A relapse today makes the current streak 0 until a future check-in.
+      // Current streak should start after the latest relapse/restart.
+      // If restart happened today, current must stay 0 until a future successful day.
       let cursor = parseDateKey(set.has(today) ? today : todayKey(new Date(Date.now() - 86400000)));
       while (set.has(todayKey(cursor))) {
         const key = todayKey(cursor);
-        if (latestRelapse && key <= latestRelapse) break;
+        if (streakResetDate && key <= streakResetDate) break;
         current++;
         cursor.setDate(cursor.getDate() - 1);
       }
@@ -425,10 +540,26 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
     function renderMilestones() {
       const stats = getStats();
-      document.getElementById('milestones').innerHTML = milestones.map(day => {
-        const unlocked = stats.current >= day || stats.total >= day;
-        return `<div class="badge-card ${unlocked ? 'unlocked' : ''}"><strong>${unlocked ? '🌿' : '🔒'} ${day} day${day > 1 ? 's' : ''}</strong><span>${unlocked ? 'Unlocked' : 'Keep going gently'}</span></div>`;
-      }).join('');
+      const unlockedCount = milestoneChapters.filter(item => stats.current >= item.day || stats.total >= item.day).length;
+      const path = milestoneChapters.map(item => {
+        const unlocked = stats.current >= item.day || stats.total >= item.day;
+        return `<span class="${unlocked ? 'unlocked' : ''}" title="${escapeHtml(item.day + ' days')}">${unlocked ? item.icon : '○'}</span>`;
+      }).join('<i></i>');
+
+      document.getElementById('milestones').innerHTML = `
+        <div class="milestone-path" aria-label="${unlockedCount} of ${milestoneChapters.length} milestones unlocked">${path}</div>
+        <div class="milestone-grid">
+          ${milestoneChapters.map(item => {
+            const unlocked = stats.current >= item.day || stats.total >= item.day;
+            return `
+              <div class="badge-card ${unlocked ? 'unlocked' : ''}">
+                <strong>${unlocked ? item.icon : '🔒'} ${item.day} day${item.day > 1 ? 's' : ''}</strong>
+                <span>${unlocked ? 'Unlocked' : 'Keep going gently'}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
     }
 
     function renderRecentNotes() {
@@ -1238,10 +1369,8 @@ ${message}`;
         date: new Date().toISOString()
       });
 
-      // If today was already checked in, remove it because today is no longer a successful no-contact day.
-      state.checkins = state.checkins.filter(d => d !== today);
-      delete state.reflections[today];
-      selectedMood = null;
+      // Restart support should reset visible progress so the user starts again from 0.
+      resetProgressAfterContact(today);
 
       document.getElementById('relapseWhat').value = '';
       document.getElementById('relapseTrigger').value = '';
@@ -1388,6 +1517,8 @@ function ensureNextFeatureState() {
   state.contactCost = typeof state.contactCost === 'string' ? state.contactCost : '';
   state.privacyMode = Boolean(state.privacyMode);
   state.emergencyRegion = typeof state.emergencyRegion === 'string' ? state.emergencyRegion : '';
+  state.missedDaysResponseKey = typeof state.missedDaysResponseKey === 'string' ? state.missedDaysResponseKey : '';
+  state.currentStreakResetDate = isDateKey(state.currentStreakResetDate) ? state.currentStreakResetDate : '';
 }
 
 function saveNextFeatureState() {
@@ -1614,8 +1745,30 @@ function renderEmergencyHelpCard() {
   if (select) select.value = state.emergencyRegion || '';
 }
 
+
+function renderMissedDaysPrompt() {
+  const card = document.getElementById('missedDaysCard');
+  if (!card) return;
+
+  const info = getMissedDaysInfo();
+  card.classList.toggle('hidden', !info);
+
+  if (!info) return;
+
+  const text = document.getElementById('missedDaysText');
+  const count = document.getElementById('missedDaysCount');
+  const form = document.getElementById('missedRelapseForm');
+
+  if (count) count.textContent = String(info.count);
+  if (text) {
+    text.textContent = `You were away for ${info.count} day${info.count === 1 ? '' : 's'}. That’s okay. What happened during ${info.count === 1 ? 'that day' : 'those days'}?`;
+  }
+  if (form) form.classList.add('hidden');
+}
+
 function renderNextFeatures() {
   ensureNextFeatureState();
+  renderMissedDaysPrompt();
   renderTodayPlan();
   renderBoundaryTracker();
   renderProgressInsights();
@@ -1742,6 +1895,26 @@ function bindNextFeatureEvents() {
       saveNextFeatureState();
       showToast('Emergency help region saved');
     });
+  }
+
+  const missedStayedBtn = document.getElementById('missedStayedBtn');
+  if (missedStayedBtn) {
+    missedStayedBtn.addEventListener('click', resolveMissedDaysAsNoContact);
+  }
+
+  const missedContactedBtn = document.getElementById('missedContactedBtn');
+  if (missedContactedBtn) {
+    missedContactedBtn.addEventListener('click', showMissedRelapseForm);
+  }
+
+  const missedSkipBtn = document.getElementById('missedSkipBtn');
+  if (missedSkipBtn) {
+    missedSkipBtn.addEventListener('click', skipMissedDaysPrompt);
+  }
+
+  const missedRelapseSaveBtn = document.getElementById('missedRelapseSaveBtn');
+  if (missedRelapseSaveBtn) {
+    missedRelapseSaveBtn.addEventListener('click', saveMissedRelapse);
   }
 
   const restoreDefaultPlanBtn = document.getElementById('restoreDefaultPlanBtn');

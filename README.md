@@ -173,3 +173,47 @@ No exact location is collected. Everything remains saved privately on this devic
 ## Setup reassurance and urgent-help wording
 The setup screen now reassures users that optional fields can be skipped and edited later.
 The urgent-help card now separates immediate danger numbers from emotional/crisis support numbers where relevant.
+
+
+## Prior days copy clarification
+The setup field for previous no-contact days was reworded so users understand it means they started no-contact before using the app and want to continue their progress here.
+
+
+## Milestone journey view
+The Review tab milestones were updated from simple badges into a playful chapter-style journey path.
+The same milestone day numbers are preserved, but each milestone now has a gentle icon, title, and supportive message.
+The 90-day milestone avoids saying the user is fully healed and instead frames it as proof of strength and consistency.
+
+
+## Compact milestone path update
+The small visual milestone journey path is kept, but the milestone cards are compact again to avoid long text crowding the Review view.
+
+
+## Missed days check-in flow
+If a returning user has full missing days between the last check-in and today, the Today tab shows a gentle card asking what happened.
+Options:
+- stayed no-contact: missed days are added as check-ins
+- contacted them: saves a restart/relapse note for the missed range
+- skip for now: does not change progress and hides that range prompt
+
+The prompt does not appear for brand-new users, does not count today automatically, and remembers answered ranges to avoid repeated prompts.
+
+
+## Restart support backfilled-days fix
+Restart/relapse support now removes successful check-ins from the break date onward.
+This keeps the current streak correct when a user started the app with already-completed no-contact days and later records that contact happened.
+
+
+## Explicit restart date fix
+Restart support now stores an explicit `currentStreakResetDate`.
+This makes the current streak return to 0 after “I contacted them,” even if the user originally backfilled previous no-contact days during setup.
+Historical total successful days can remain, but the active/current streak resets.
+
+
+## Contact reset visible progress fix
+When the user records “I contacted them,” visible progress now resets from zero:
+- check-ins are cleared
+- reflections are cleared
+- current streak, total days, longest streak, and this month become 0
+- relapse/restart note is still saved
+This matches the restart-support expectation when the user previously entered prior no-contact days during setup.

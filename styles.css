@@ -155,8 +155,13 @@
     .day.checked { background: var(--green-soft); border-color: rgba(59,109,17,.23); color: var(--green); font-weight: 850; }
     .mood-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
 
-    .milestones { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-    .badge-card { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 14px; opacity: .55; }
+    .milestones { display: grid; gap: 14px; }
+    .milestone-path { display: flex; align-items: center; gap: 7px; overflow-x: auto; padding: 8px 2px 2px; }
+    .milestone-path span { width: 34px; height: 34px; border-radius: 999px; flex: 0 0 auto; display: grid; place-items: center; background: white; border: 1px solid var(--border); color: var(--muted); font-weight: 900; }
+    .milestone-path span.unlocked { background: var(--green-soft); border-color: rgba(59,109,17,.25); color: var(--green); }
+    .milestone-path i { height: 2px; min-width: 16px; flex: 1 0 16px; background: var(--border); border-radius: 99px; }
+    .milestone-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .badge-card { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 14px; opacity: .58; }
     .badge-card.unlocked { opacity: 1; border-color: rgba(59,109,17,.25); background: var(--green-soft); }
     .badge-card strong { display: block; }
     .badge-card span { color: var(--muted); font-size: 12px; }
@@ -207,7 +212,7 @@
       .stats { grid-template-columns: repeat(4, 1fr); }
       .grid-2 { grid-template-columns: 1fr 1fr; }
       .grid-3 { grid-template-columns: repeat(3, 1fr); }
-      .milestones { grid-template-columns: repeat(4, 1fr); }
+      .milestone-grid { grid-template-columns: repeat(4, 1fr); }
       .modal-backdrop { align-items: center; }
       .card { padding: 24px; }
     }
@@ -740,4 +745,44 @@ label.ghost-btn:focus-within {
 
 .urgent-help-number span + span {
   margin-top: 2px;
+}
+
+
+.missed-days-card {
+  border-color: rgba(59,109,17,.18);
+}
+
+.missed-days-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.missed-days-header h2 {
+  margin-top: 0;
+}
+
+.missed-days-count {
+  min-width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.missed-relapse-form {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 520px) {
+  .missed-days-header {
+    align-items: center;
+  }
 }
