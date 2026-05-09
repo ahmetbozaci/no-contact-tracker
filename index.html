@@ -25,6 +25,34 @@
 <input id="setupPriorDays" inputmode="numeric" min="0" max="5000" placeholder="Example: 21" type="number"/>
 <p class="field-help">Optional. We’ll add these days up to yesterday, so you can still check in for today.</p>
 </div>
+<details class="setup-optional">
+<summary>Optional support setup</summary>
+<div class="form-row setup-nested">
+<div>
+<label for="setupReason">Main reason for no-contact</label>
+<textarea id="setupReason" maxlength="280" placeholder="Example: I want peace, healing, and self-respect."></textarea>
+<p class="field-help">This will appear in Help when an urge feels strong.</p>
+</div>
+<div>
+<label for="setupSafePerson">Safe person to contact instead</label>
+<input id="setupSafePerson" maxlength="80" placeholder="Example: My friend / sister / trusted person" type="text"/>
+<p class="field-help">Optional. You can add contact details later.</p>
+</div>
+<div>
+<label for="setupEmergencyRegion">Emergency help region</label>
+<select id="setupEmergencyRegion">
+<option value="">Choose only if you want</option>
+<option value="turkey">Turkey</option>
+<option value="us">United States</option>
+<option value="canada">Canada</option>
+<option value="uk_ireland">United Kingdom / Ireland</option>
+<option value="eu">European Union</option>
+<option value="other">Other / I’ll use my local emergency number</option>
+</select>
+<p class="field-help">Used only to show helpful urgent numbers. Saved privately on this device.</p>
+</div>
+</div>
+</details>
 <button class="primary-btn" type="submit">Start privately</button>
 </form>
 </div>
@@ -180,6 +208,12 @@
 <div class="actions"><button class="soft-btn" id="saveReasonsBtn" type="button">Save reasons</button></div>
 </div>
 </div>
+<div class="card urgent-help-card" id="urgentHelpCard">
+<h2>Need urgent help?</h2>
+<p class="subtitle">If you might hurt yourself or someone else, call local emergency services now.</p>
+<div class="urgent-help-number" id="urgentHelpNumber">Choose an emergency help region in Settings to show a helpful number here.</div>
+<p class="field-help">This app is not a crisis service. In immediate danger, contact local emergency services.</p>
+</div>
 <details class="card disclosure-card">
 <summary>
 <span>
@@ -324,6 +358,20 @@
 </div>
 </div>
 <div class="grid-2">
+<div class="card">
+<h2>Emergency help region</h2>
+<p class="subtitle">Optional. Used only to show helpful urgent numbers inside Help.</p>
+<select id="emergencyRegionSelect">
+<option value="">Not selected</option>
+<option value="turkey">Turkey</option>
+<option value="us">United States</option>
+<option value="canada">Canada</option>
+<option value="uk_ireland">United Kingdom / Ireland</option>
+<option value="eu">European Union</option>
+<option value="other">Other / I’ll use my local emergency number</option>
+</select>
+<p class="field-help">No exact location is needed. This stays saved privately on this device.</p>
+</div>
 <div class="card">
 <h2>2. Privacy</h2>
 <p class="subtitle">Blur sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>

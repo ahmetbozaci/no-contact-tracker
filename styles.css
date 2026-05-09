@@ -690,3 +690,44 @@ label.ghost-btn:focus-within {
   font-size: 13px;
   line-height: 1.45;
 }
+
+
+.setup-optional {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  background: var(--card-soft);
+}
+
+.setup-optional summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.setup-nested {
+  margin-top: 12px;
+}
+
+.urgent-help-card {
+  border-color: rgba(155,44,44,.18);
+}
+
+.urgent-help-number {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.urgent-help-number strong {
+  font-size: 18px;
+}
+
+.urgent-help-number span {
+  color: var(--text);
+  font-size: 14px;
+}

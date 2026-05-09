@@ -158,3 +158,13 @@ No new app features were added. This pass improves usability:
 New users can optionally enter how many no-contact days they already completed before starting the app.
 The app backfills those completed days up to yesterday, so today's check-in remains available.
 This preserves the same storage key and stores the days as normal check-in dates.
+
+
+## Optional support setup
+The first-time setup now includes optional support fields:
+- Main reason for no-contact
+- Safe person to contact instead
+- Emergency help region
+
+The emergency help region is used only to show a small urgent-help card inside Help.
+No exact location is collected. Everything remains saved privately on this device.

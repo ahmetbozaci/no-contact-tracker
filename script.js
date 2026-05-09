@@ -49,7 +49,8 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         shareImageTemplate: 'soft',
         shareImageSize: 'portrait',
         reminderTime: '',
-        reminderLastShown: ''
+        reminderLastShown: '',
+        emergencyRegion: ''
       };
     }
 
@@ -1181,9 +1182,27 @@ ${message}`;
       e.preventDefault();
       const name = document.getElementById('setupName').value.trim();
       const priorDays = Number(document.getElementById('setupPriorDays')?.value || 0);
+      const mainReason = document.getElementById('setupReason')?.value.trim() || '';
+      const safePerson = document.getElementById('setupSafePerson')?.value.trim() || '';
+      const emergencyRegion = document.getElementById('setupEmergencyRegion')?.value || '';
       if (!name) return;
 
       state.username = name;
+      state.emergencyRegion = emergencyRegion;
+
+      if (mainReason) {
+        state.reasons = mainReason;
+      }
+
+      if (safePerson) {
+        ensureNextFeatureState();
+        state.safePeople.unshift({
+          name: safePerson,
+          contact: '',
+          note: 'Added during setup',
+          createdAt: new Date().toISOString()
+        });
+      }
 
       if (priorDays > 0) {
         state.checkins = [...new Set([...state.checkins, ...createPastCheckins(priorDays)])].sort();
@@ -1368,6 +1387,7 @@ function ensureNextFeatureState() {
   state.safePeople = Array.isArray(state.safePeople) ? state.safePeople : [];
   state.contactCost = typeof state.contactCost === 'string' ? state.contactCost : '';
   state.privacyMode = Boolean(state.privacyMode);
+  state.emergencyRegion = typeof state.emergencyRegion === 'string' ? state.emergencyRegion : '';
 }
 
 function saveNextFeatureState() {
@@ -1548,6 +1568,52 @@ function renderTodayPlanEditor() {
   if (editor) editor.value = state.todayPlanItems.join('\n');
 }
 
+
+function getEmergencyHelpInfo(region) {
+  const options = {
+    turkey: {
+      title: 'Turkey: 112',
+      detail: 'Call 112 for urgent emergency help.'
+    },
+    us: {
+      title: 'United States: 988 or 911',
+      detail: 'Call/text 988 for crisis support. Call 911 for immediate danger.'
+    },
+    canada: {
+      title: 'Canada: 988 or 911',
+      detail: 'Call/text 988 for suicide crisis support. Call 911 for immediate danger.'
+    },
+    uk_ireland: {
+      title: 'UK / Ireland: 999 or 112',
+      detail: 'Call 999 or 112 for immediate danger. Samaritans: 116 123 for emotional support.'
+    },
+    eu: {
+      title: 'European Union: 112',
+      detail: 'Call 112 for urgent emergency help across EU countries.'
+    },
+    other: {
+      title: 'Use your local emergency number',
+      detail: 'If there is immediate danger, call your local emergency services now.'
+    }
+  };
+
+  return options[region] || {
+    title: 'Choose an emergency help region in Settings',
+    detail: 'If there is immediate danger, use your local emergency number now.'
+  };
+}
+
+function renderEmergencyHelpCard() {
+  const number = document.getElementById('urgentHelpNumber');
+  if (!number) return;
+
+  const info = getEmergencyHelpInfo(state.emergencyRegion);
+  number.innerHTML = `<strong>${safeText(info.title)}</strong><span>${safeText(info.detail)}</span>`;
+
+  const select = document.getElementById('emergencyRegionSelect');
+  if (select) select.value = state.emergencyRegion || '';
+}
+
 function renderNextFeatures() {
   ensureNextFeatureState();
   renderTodayPlan();
@@ -1557,6 +1623,7 @@ function renderNextFeatures() {
   renderContactCost();
   renderPrivacyMode();
   renderTodayPlanEditor();
+  renderEmergencyHelpCard();
   renderPolishHelpers();
 }
 
@@ -1665,6 +1732,15 @@ function bindNextFeatureEvents() {
       state.todayPlanItems = items.slice(0, 20);
       saveNextFeatureState();
       showToast('Today plan updated');
+    });
+  }
+
+  const emergencyRegionSelect = document.getElementById('emergencyRegionSelect');
+  if (emergencyRegionSelect) {
+    emergencyRegionSelect.addEventListener('change', e => {
+      state.emergencyRegion = e.target.value;
+      saveNextFeatureState();
+      showToast('Emergency help region saved');
     });
   }
 
