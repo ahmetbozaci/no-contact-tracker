@@ -1572,34 +1572,34 @@ function renderTodayPlanEditor() {
 function getEmergencyHelpInfo(region) {
   const options = {
     turkey: {
-      title: 'Turkey: 112',
-      detail: 'Call 112 for urgent emergency help.'
+      title: 'Turkey',
+      lines: ['Immediate danger: 112']
     },
     us: {
-      title: 'United States: 988 or 911',
-      detail: 'Call/text 988 for crisis support. Call 911 for immediate danger.'
+      title: 'United States',
+      lines: ['Immediate danger: 911', 'Crisis support: call or text 988']
     },
     canada: {
-      title: 'Canada: 988 or 911',
-      detail: 'Call/text 988 for suicide crisis support. Call 911 for immediate danger.'
+      title: 'Canada',
+      lines: ['Immediate danger: 911', 'Suicide crisis support: call or text 988']
     },
     uk_ireland: {
-      title: 'UK / Ireland: 999 or 112',
-      detail: 'Call 999 or 112 for immediate danger. Samaritans: 116 123 for emotional support.'
+      title: 'United Kingdom / Ireland',
+      lines: ['Immediate danger: 999 or 112', 'Emotional support: Samaritans 116 123']
     },
     eu: {
-      title: 'European Union: 112',
-      detail: 'Call 112 for urgent emergency help across EU countries.'
+      title: 'European Union',
+      lines: ['Immediate danger: 112']
     },
     other: {
       title: 'Use your local emergency number',
-      detail: 'If there is immediate danger, call your local emergency services now.'
+      lines: ['If there is immediate danger, call your local emergency services now.']
     }
   };
 
   return options[region] || {
     title: 'Choose an emergency help region in Settings',
-    detail: 'If there is immediate danger, use your local emergency number now.'
+    lines: ['If there is immediate danger, use your local emergency number now.']
   };
 }
 
@@ -1608,7 +1608,7 @@ function renderEmergencyHelpCard() {
   if (!number) return;
 
   const info = getEmergencyHelpInfo(state.emergencyRegion);
-  number.innerHTML = `<strong>${safeText(info.title)}</strong><span>${safeText(info.detail)}</span>`;
+  number.innerHTML = `<strong>${safeText(info.title)}</strong>${info.lines.map(line => `<span>${safeText(line)}</span>`).join('')}`;
 
   const select = document.getElementById('emergencyRegionSelect');
   if (select) select.value = state.emergencyRegion || '';

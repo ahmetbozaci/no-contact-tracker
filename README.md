@@ -168,3 +168,8 @@ The first-time setup now includes optional support fields:
 
 The emergency help region is used only to show a small urgent-help card inside Help.
 No exact location is collected. Everything remains saved privately on this device.
+
+
+## Setup reassurance and urgent-help wording
+The setup screen now reassures users that optional fields can be skipped and edited later.
+The urgent-help card now separates immediate danger numbers from emotional/crisis support numbers where relevant.

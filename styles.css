@@ -731,3 +731,13 @@ label.ghost-btn:focus-within {
   color: var(--text);
   font-size: 14px;
 }
+
+
+.setup-reassurance {
+  text-align: center;
+  margin-top: 2px;
+}
+
+.urgent-help-number span + span {
+  margin-top: 2px;
+}
