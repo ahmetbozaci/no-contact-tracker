@@ -20,6 +20,11 @@
 <label for="setupName">Your display name</label>
 <input autocomplete="nickname" id="setupName" maxlength="40" placeholder="Example: Ahmet" required="" type="text"/>
 </div>
+<div>
+<label for="setupPriorDays">Already completed no-contact days</label>
+<input id="setupPriorDays" inputmode="numeric" min="0" max="5000" placeholder="Example: 21" type="number"/>
+<p class="field-help">Optional. We’ll add these days up to yesterday, so you can still check in for today.</p>
+</div>
 <button class="primary-btn" type="submit">Start privately</button>
 </form>
 </div>

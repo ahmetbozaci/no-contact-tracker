@@ -247,6 +247,23 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       return new Date(y, m - 1, d);
     }
 
+
+    function createPastCheckins(completedDays) {
+      const count = Math.max(0, Math.min(5000, Number(completedDays) || 0));
+      const dates = [];
+      const cursor = new Date();
+
+      // Start from yesterday so today's check-in still feels intentional.
+      cursor.setDate(cursor.getDate() - 1);
+
+      for (let i = 0; i < count; i++) {
+        dates.push(todayKey(cursor));
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      return dates;
+    }
+
     function escapeHtml(text = '') {
       return String(text).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
     }
@@ -1163,10 +1180,17 @@ ${message}`;
     document.getElementById('setupForm').addEventListener('submit', e => {
       e.preventDefault();
       const name = document.getElementById('setupName').value.trim();
+      const priorDays = Number(document.getElementById('setupPriorDays')?.value || 0);
       if (!name) return;
+
       state.username = name;
+
+      if (priorDays > 0) {
+        state.checkins = [...new Set([...state.checkins, ...createPastCheckins(priorDays)])].sort();
+      }
+
       saveState();
-      showToast('Welcome 🌿');
+      showToast(priorDays > 0 ? `Welcome 🌿 ${Math.floor(Math.min(priorDays, 5000))} days added` : 'Welcome 🌿');
     });
 
     document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));

@@ -152,3 +152,9 @@ No new app features were added. This pass improves usability:
 - Tab navigation updates `aria-current`.
 - Emergency modal focus is managed more cleanly.
 - Added reduced-motion support.
+
+
+## Prior no-contact days setup
+New users can optionally enter how many no-contact days they already completed before starting the app.
+The app backfills those completed days up to yesterday, so today's check-in remains available.
+This preserves the same storage key and stores the days as normal check-in dates.
