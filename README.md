@@ -312,3 +312,15 @@ Improved readability in dark mode:
 - clearer card/input/list backgrounds
 - better button contrast
 - improved calendar, checklist, modal, and Share page contrast
+
+
+## Poster-style website refresh
+The website visual identity was adjusted to be closer to the promotional image:
+- cream/sage palette
+- softer rounded cards
+- serif hero typography
+- landscape-style Today card
+- calmer shadows and spacing
+- privacy trust pill on setup
+
+Features and storage remain unchanged.
