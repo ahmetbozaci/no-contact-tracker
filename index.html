@@ -79,7 +79,7 @@
 <div>
 <div class="tag"><span class="dot"></span><span id="todayTag">Today is a new choice</span></div>
 <h1 class="title">Choose peace, <em>one day</em> at a time.</h1>
-<p class="subtitle">A private place to check in, pause during urges, and protect your peace one day at a time.</p>
+<p class="subtitle">Check in, pause, and protect your peace.</p>
 </div>
 <div class="card checkin-box">
 <button class="big-check" id="checkinBtn" type="button">
@@ -124,7 +124,7 @@
 <summary>
 <span>
 <strong>Start simply</strong>
-<small>Four gentle steps for using this app</small>
+<small>Four simple steps</small>
 </span>
 </summary>
 <div class="guide-steps">
@@ -141,40 +141,26 @@
 <div class="grid-2">
 <div class="card">
 <h2>Need support today?</h2>
-<p class="subtitle">If the urge gets loud, pause first. You can write it without sending it.</p>
+<p class="subtitle">Pause first. Write it here instead of sending.</p>
 <div class="actions">
 <button class="danger-btn calm-primary-action" data-open-emergency="" type="button">I feel like contacting them</button>
 <button class="ghost-btn" data-tab-jump="progress" type="button">Review progress</button>
 </div>
 </div>
 <div class="card">
-<h2>Daily affirmation</h2>
+<h2>Today’s reminder</h2>
 <p class="subtitle" id="dailyQuote"></p>
 </div>
 </div>
-<!-- Today-only daily boundary tools. Keep this block inside #today. -->
+<!-- Today-only protection plan. Saved separately for each day. -->
 <details class="card disclosure-card">
 <summary>
 <span>
-<strong>Daily boundaries</strong>
-<small>Today plan and social media protection</small>
+<strong>Today’s protection plan</strong>
+<small>Small promises for today</small>
 </span>
 </summary>
-<div class="grid-2 nested-grid">
-<div class="soft-card">
-<h2>Today plan</h2>
-<p class="subtitle">Small boundaries for today. Customize the list from Settings.</p>
 <div class="today-plan-list" id="todayPlanList"></div>
-<div class="actions">
-<button class="ghost-btn" id="resetTodayPlanBtn" type="button">Reset today</button>
-</div>
-</div>
-<div class="soft-card">
-<h2>Social media boundaries</h2>
-<p class="subtitle">No-contact also means protecting yourself from small checks that reopen the loop.</p>
-<div class="boundary-list" id="boundaryList"></div>
-</div>
-</div>
 </details>
 </section>
 
@@ -184,7 +170,7 @@
 <div>
 <div class="tag"><span class="dot"></span> Private review</div>
 <h1 class="title">See what is helping.</h1>
-<p class="subtitle">Review streaks, patterns, milestones, and notes without comparing yourself to anyone else.</p>
+<p class="subtitle">Review your progress without comparison.</p>
 </div>
 <div class="card">
 <h2>Milestones</h2>
@@ -193,7 +179,7 @@
 </div>
 <div class="card">
 <h2>Helpful patterns</h2>
-<p class="subtitle">Simple local insights to understand what helps and what makes urges harder.</p>
+<p class="subtitle">Simple patterns from your saved progress.</p>
 <div class="insights-grid" id="progressInsights"></div>
 </div>
 
@@ -210,7 +196,7 @@
 <summary>
 <span>
 <strong>Recent private notes</strong>
-<small>Review mood notes when you need context</small>
+<small>Recent mood notes</small>
 </span>
 </summary>
 <div class="list sensitive" id="recentNotes"></div>
@@ -222,7 +208,7 @@
 <div>
 <div class="tag"><span class="dot"></span> Help in an urge</div>
 <h1 class="title">Pause before you send.</h1>
-<p class="subtitle">Start with the 20-minute pause. Then read your reasons, write without sending, or contact someone safe.</p>
+<p class="subtitle">Start with a 20-minute pause, then choose a safer next step.</p>
 <div class="actions"><button class="danger-btn calm-primary-action" data-open-emergency="" type="button">Start 20-minute pause</button></div>
 </div>
 <div class="card">
@@ -241,19 +227,19 @@
 <summary>
 <span>
 <strong>Emergency preparation</strong>
-<small>Contact cost reminder and safe people</small>
+<small>Reminders and safer contacts</small>
 </span>
 </summary>
 <div class="grid-2 nested-grid">
 <div class="soft-card">
 <h2>Contact cost reminder</h2>
-<p class="subtitle">Write what usually happens after contact, so Emergency mode can remind you before the urge takes over.</p>
+<p class="subtitle">A reminder for your future self.</p>
 <textarea class="sensitive" id="contactCostText" placeholder="Example: I wait for replies, lose sleep, feel anxious again…"></textarea>
 <div class="actions"><button class="soft-btn" id="saveContactCostBtn" type="button">Save reminder</button></div>
 </div>
 <div class="soft-card">
 <h2>Safe people</h2>
-<p class="subtitle">People you can contact instead. Stored only on this device.</p>
+<p class="subtitle">People you can contact instead.</p>
 <div class="form-row">
 <input id="safePersonName" type="text" placeholder="Name" />
 <input id="safePersonContact" type="text" placeholder="Phone, Discord, Instagram, or note" />
@@ -272,7 +258,7 @@
 <small>Gentle help if contact happened</small>
 </span>
 </summary>
-<p class="subtitle">If you contacted them, checked their profile, or replied, this is not shame. It is information.</p>
+<p class="subtitle">If contact happened, save what you learned.</p>
 <div class="form-row">
 <textarea class="sensitive" id="relapseWhat" placeholder="What happened?"></textarea>
 <input class="sensitive" id="relapseTrigger" placeholder="What triggered it? Example: loneliness, their photo, night time…" type="text"/>
@@ -285,20 +271,20 @@
 <summary>
 <span>
 <strong>Urge history</strong>
-<small>Private record of saved-not-sent moments</small>
+<small>Saved-not-sent moments</small>
 </span>
 </summary>
-<p class="subtitle">A private record of urges you survived instead of sending.</p>
+<p class="subtitle">Urges you saved instead of sending.</p>
 <div class="list sensitive" id="urgeHistory"></div>
 </details>
 <details class="card disclosure-card">
 <summary>
 <span>
 <strong>Letters I never send</strong>
-<small>Write, save, and release privately</small>
+<small>Write and release privately</small>
 </span>
 </summary>
-<p class="subtitle">Write what you need to release. Save it here, not in their messages.</p>
+<p class="subtitle">Save it here, not in their messages.</p>
 <div class="form-row sensitive">
 <input id="letterTitle" maxlength="80" placeholder="Letter title, optional" type="text"/>
 <textarea id="letterBody" placeholder="Write the letter here…"></textarea>
@@ -309,35 +295,38 @@
 </div>
 </section>
 <section class="section" id="share">
-<div class="hero">
-<div>
-<div class="tag"><span class="dot"></span> Discord ready</div>
-<h1 class="title">Share only what feels right.</h1>
-<p class="subtitle">Create a simple text update or a calm progress image when you want encouragement from your group.</p>
+<div class="hero share-hero-simple">
+<div class="card share-mode-card">
+<h2>Choose share type</h2>
+<div class="share-mode-toggle" role="tablist" aria-label="Share type">
+<button class="share-mode-btn" id="shareModeTextBtn" data-share-mode="text" type="button" role="tab" aria-controls="shareTextPanel">Text</button>
+<button class="share-mode-btn active" id="shareModeImageBtn" data-share-mode="image" type="button" role="tab" aria-controls="shareImagePanel" aria-selected="true">Picture</button>
 </div>
-<details class="card disclosure-card" open>
-<summary>
-<span>
-<strong>Progress message</strong>
-<small>Copy a Discord-ready text update</small>
-</span>
-</summary>
+</div>
+</div>
+
+<div class="card share-panel hidden" id="shareTextPanel">
+<div class="share-image-header">
+<div>
+<h2>Text</h2>
+<p class="subtitle">Ready to copy.</p>
+</div>
+</div>
 <div class="share-box" id="shareText"></div>
 <div class="actions">
 <button class="primary-btn" id="copyShareBtn" type="button">Copy text</button>
-<button class="soft-btn" id="nativeShareBtn" type="button">Native share</button>
-<button class="ghost-btn" id="refreshShareBtn" type="button">Refresh</button>
+<button class="soft-btn" id="nativeShareBtn" type="button">Share text</button>
 </div>
-</details>
 </div>
-<div class="card">
+
+<div class="card share-panel" id="shareImagePanel">
 <div class="share-image-header">
 <div>
-<h2>Progress image</h2>
-<p class="subtitle">Download a PNG share card or share the image directly if your browser supports it.</p>
+<h2>Picture</h2>
+<p class="subtitle">Ready to share or download.</p>
 </div>
 </div>
-<div class="grid-2 compact-controls">
+<div class="compact-controls single-control">
 <div>
 <label for="shareImageTemplate">Image style</label>
 <select id="shareImageTemplate">
@@ -346,22 +335,13 @@
 <option value="dark">Calm dark</option>
 </select>
 </div>
-<div>
-<label for="shareImageSize">Image size</label>
-<select id="shareImageSize">
-<option value="portrait">Portrait 1080×1350</option>
-<option value="story">Story 1080×1920</option>
-<option value="square">Square 1080×1080</option>
-</select>
-</div>
 </div>
 <div class="share-image-preview">
 <img id="shareImagePreview" alt="Progress share card preview" />
 </div>
 <div class="actions">
-<button class="primary-btn" id="downloadShareImageBtn" type="button">Download PNG</button>
-<button class="soft-btn" id="shareImageBtn" type="button">Share image</button>
-<button class="ghost-btn" id="refreshShareImageBtn" type="button">Refresh image</button>
+<button class="primary-btn" id="downloadShareImageBtn" type="button">Download picture</button>
+<button class="soft-btn" id="shareImageBtn" type="button">Share picture</button>
 </div>
 </div>
 </section>
@@ -370,7 +350,7 @@
 <div>
 <div class="tag"><span class="dot"></span> Private settings</div>
 <h1 class="title">Your progress stays private.</h1>
-<p class="subtitle">Manage privacy, reminders, backups, and saved progress. Nothing is sent anywhere.</p>
+<p class="subtitle">Manage privacy, backups, and saved progress.</p>
 </div>
 <div class="card">
 <h2>1. Profile</h2>
@@ -383,7 +363,7 @@
 <div class="grid-2">
 <div class="card">
 <h2>Emergency help region</h2>
-<p class="subtitle">Optional. Used only to show helpful urgent numbers inside Help.</p>
+<p class="subtitle">Optional urgent-help region.</p>
 <select id="emergencyRegionSelect">
 <option value="">Not selected</option>
 <option value="turkey">Turkey</option>
@@ -397,20 +377,27 @@
 </div>
 <div class="card">
 <h2>2. Privacy</h2>
-<p class="subtitle">Blur sensitive notes, letters, unsent messages, and safe people when someone is nearby.</p>
+<p class="subtitle">Blur sensitive content when someone is nearby.</p>
 <div class="actions">
 <button class="soft-btn" id="privacyModeToggle" type="button">Enable privacy mode</button>
 </div>
 <div id="privacyNotice" class="notice hidden" style="margin-top:12px"></div>
 </div>
+<div class="card">
+<h2>Dark mode</h2>
+<p class="subtitle">Use a calmer dark theme for the whole website.</p>
+<div class="actions">
+<button class="soft-btn" id="darkModeToggle" type="button">Enable dark mode</button>
+</div>
+</div>
 <details class="card disclosure-card">
 <summary>
 <span>
 <strong>3. Today checklist</strong>
-<small>Edit the daily checklist shown on Today</small>
+<small>Edit today’s checklist</small>
 </span>
 </summary>
-<p class="subtitle">One item per line. These become your daily checklist.</p>
+<p class="subtitle">One item per line.</p>
 <textarea id="todayPlanEditor" placeholder="Don’t check their profile&#10;Don’t message&#10;Take a walk"></textarea>
 <div class="actions">
 <button class="soft-btn" id="saveTodayPlanItemsBtn" type="button">Save checklist</button>
@@ -422,7 +409,7 @@
 
 <div class="card data-safety-card" id="dataSafetySummary">
 <h2>4. Backup reminder</h2>
-<p class="subtitle">Your progress is stored only on this device. Export a backup file when this progress matters to you.</p>
+<p class="subtitle">Export a backup when this progress matters to you.</p>
 <div class="data-safety-grid">
 <div><strong id="lastExportStatus">Not exported yet</strong><span>Last export</span></div>
 <div><strong id="lastBackupStatus">No backup yet</strong><span>Latest local backup</span></div>
@@ -437,7 +424,7 @@
 <summary>
 <span>
 <strong>5. Backup</strong>
-<small>Save or restore your progress</small>
+<small>Backup tools</small>
 </span>
 </summary>
 <div class="actions">
@@ -454,10 +441,10 @@
 <summary>
 <span>
 <strong>6. Reset options</strong>
-<small>Only use these when you are sure</small>
+<small>Use carefully</small>
 </span>
 </summary>
-<p class="subtitle">These actions can remove saved progress from this device. Use them only when you are sure.</p>
+<p class="subtitle">These actions can remove saved progress.</p>
 <div class="actions">
 <button class="ghost-btn" id="clearTodayBtn" type="button">Clear today only</button>
 <button class="danger-btn" id="resetAllBtn" type="button">Reset all progress</button>
@@ -479,7 +466,7 @@
 <div class="modal-top">
 <div>
 <h2 id="emergencyTitle" style="margin:0">Start with a pause</h2>
-<p class="subtitle">You only need to get through this wave. Write here, breathe, and wait before acting.</p>
+<p class="subtitle">Breathe, write, and wait before acting.</p>
 </div>
 <button aria-label="Close help window" class="icon-btn" id="closeEmergencyBtn" type="button">×</button>
 </div>

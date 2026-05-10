@@ -28,7 +28,61 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       'The urge will pass. Your self-respect can stay.',
       'You are allowed to protect your healing.',
       'Today, silence can be an act of love toward yourself.',
-      'You are not weak for feeling. You are strong for pausing.'
+      'You are not weak for feeling. You are strong for pausing.',
+      'You can miss someone and still choose distance.',
+      'No message is worth losing your peace today.',
+      'Your nervous system deserves a quiet day.',
+      'One calm choice can protect the rest of your day.',
+      'You do not have to answer every feeling with action.',
+      'Let the wave pass before you decide anything.',
+      'Checking their profile will not give you the peace you need.',
+      'You are building a life that does not revolve around waiting.',
+      'The silence may feel hard, but it can also protect you.',
+      'You can love the memory and still protect the present.',
+      'Today, your job is not to fix the past.',
+      'You are allowed to choose yourself without explaining it.',
+      'Not reaching out is still an action. It is care for yourself.',
+      'Your future self is grateful for this pause.',
+      'You can feel sad and still stay steady.',
+      'The urge is temporary. Your healing matters longer.',
+      'Do not trade your progress for a moment of relief.',
+      'You do not need their response to be okay today.',
+      'Let peace be louder than curiosity.',
+      'You are practicing self-respect in small steps.',
+      'Today is not about perfection. It is about protection.',
+      'You can be gentle with yourself and still hold the boundary.',
+      'Old patterns do not need another chance today.',
+      'Your heart can ache and still move forward.',
+      'A quiet day is still progress.',
+      'You are not behind. You are healing at your own pace.',
+      'Choose the version of you that sleeps easier tonight.',
+      'You can wait 20 minutes before doing anything.',
+      'You are stronger than the first wave of emotion.',
+      'Do something kind for yourself before checking on them.',
+      'You are not alone in wanting to go back. Pause anyway.',
+      'The fact that it is hard does not mean it is wrong.',
+      'Your peace is worth protecting from small triggers.',
+      'Today, do not reopen the loop.',
+      'You can remember them without returning to them.',
+      'You deserve a love that does not cost your calm.',
+      'Let the unanswered question stay unanswered today.',
+      'You are learning what keeps you safe.',
+      'Every day of distance gives you more room to breathe.',
+      'You are allowed to outgrow the cycle.',
+      'One day at a time is enough.',
+      'The boundary is not punishment. It is protection.',
+      'You do not have to prove your pain to anyone.',
+      'Pause. Breathe. Choose what protects you.',
+      'You can care and still not contact.',
+      'Healing often looks quiet from the outside.',
+      'Your worth is not waiting in their inbox.',
+      'The calm you want is built by choices like this.',
+      'Today, choose less chaos.',
+      'Do not let loneliness make the decision for you.',
+      'You are creating space for something healthier.',
+      'Your feelings are real. They are not instructions.',
+      'Keep the promise you made to your peace.',
+      'You can begin again without shame.'
     ];
 
     let state = loadState();
@@ -56,11 +110,13 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
         letters: [],
         shareImageTemplate: 'soft',
         shareImageSize: 'portrait',
+        shareMode: 'image',
         reminderTime: '',
         reminderLastShown: '',
         emergencyRegion: '',
         missedDaysResponseKey: '',
-        currentStreakResetDate: ''
+        currentStreakResetDate: '',
+        darkMode: false
       };
     }
 
@@ -145,6 +201,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       merged.reminderLastShown = typeof merged.reminderLastShown === 'string' ? merged.reminderLastShown : '';
       merged.missedDaysResponseKey = typeof merged.missedDaysResponseKey === 'string' ? merged.missedDaysResponseKey : '';
       merged.currentStreakResetDate = isDateKey(merged.currentStreakResetDate) ? merged.currentStreakResetDate : '';
+      merged.darkMode = Boolean(merged.darkMode);
 
       merged.checkins = Array.isArray(merged.checkins)
         ? [...new Set(merged.checkins.filter(isDateKey))].sort()
@@ -184,6 +241,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
       merged.shareImageTemplate = ['soft', 'minimal', 'dark'].includes(merged.shareImageTemplate) ? merged.shareImageTemplate : 'soft';
       merged.shareImageSize = ['portrait', 'story', 'square'].includes(merged.shareImageSize) ? merged.shareImageSize : 'portrait';
+      merged.shareMode = ['text', 'image'].includes(merged.shareMode) ? merged.shareMode : 'image';
 
       return merged;
     }
@@ -444,6 +502,13 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       return { current, total: days.length, longest, thisMonth, checkedToday: set.has(today) };
     }
 
+    function onElement(id, eventName, handler) {
+      const element = document.getElementById(id);
+      if (!element) return false;
+      element.addEventListener(eventName, handler);
+      return true;
+    }
+
     function showToast(message) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -461,9 +526,26 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (tab === 'share') {
+        renderShareMode();
         renderShareText();
         renderShareImage();
       }
+    }
+
+
+    function renderShareMode() {
+      const mode = state.shareMode || 'image';
+      const textPanel = document.getElementById('shareTextPanel');
+      const imagePanel = document.getElementById('shareImagePanel');
+
+      if (textPanel) textPanel.classList.toggle('hidden', mode !== 'text');
+      if (imagePanel) imagePanel.classList.toggle('hidden', mode !== 'image');
+
+      document.querySelectorAll('[data-share-mode]').forEach(btn => {
+        const active = btn.dataset.shareMode === mode;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
     }
 
     function render() {
@@ -479,13 +561,14 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       document.getElementById('editName').value = state.username;
       document.getElementById('reasonsText').value = state.reasons || '';
       document.getElementById('shareImageTemplate').value = state.shareImageTemplate || 'soft';
-      document.getElementById('shareImageSize').value = state.shareImageSize || 'portrait';
 
       const btn = document.getElementById('checkinBtn');
       btn.classList.toggle('done', stats.checkedToday);
       document.getElementById('checkinTitle').textContent = stats.checkedToday ? 'Already checked in today' : 'I stayed no-contact today';
       document.getElementById('checkinSub').textContent = stats.checkedToday ? 'You showed up for yourself today 🌱' : 'Tap once to record today';
-      document.getElementById('reflectionBox').classList.toggle('hidden', !stats.checkedToday);
+      const todayReflection = state.reflections[todayKey()];
+      const reflectionSavedToday = Boolean(todayReflection?.savedAt || todayReflection?.mood || todayReflection?.note);
+      document.getElementById('reflectionBox').classList.toggle('hidden', !stats.checkedToday || reflectionSavedToday);
 
       document.getElementById('statsGrid').innerHTML = `
         <div class="stat"><strong>${stats.current}</strong><span>Current streak</span></div>
@@ -498,6 +581,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       renderCalendar();
       renderMilestones();
       renderRecentNotes();
+      renderShareMode();
       renderShareText();
       renderShareImage();
       renderTriggerButtons();
@@ -638,6 +722,19 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       showToast('Letter saved privately');
     }
 
+    function getMoodShareMessage(mood) {
+      const moodMessages = {
+        Calm: 'I’m choosing peace today.',
+        Strong: 'I stayed steady today.',
+        Sad: 'I’m being gentle with myself today.',
+        Anxious: 'I paused before reacting today.',
+        Tempted: 'I chose not to send the message today.',
+        Hopeful: 'I’m moving forward gently today.'
+      };
+
+      return moodMessages[mood] || 'I’m choosing peace today.';
+    }
+
     function getShareData() {
       const stats = getStats();
       const mood = state.reflections[todayKey()]?.mood || 'Not added';
@@ -650,7 +747,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
           day: 'numeric',
           year: 'numeric'
         }),
-        message: 'I’m choosing peace today.'
+        message: getMoodShareMessage(mood)
       };
     }
 
@@ -705,9 +802,8 @@ ${message}`;
     }
 
     function getShareCanvasSize() {
-      const size = state.shareImageSize || 'portrait';
-      if (size === 'story') return { width: 1080, height: 1920, label: 'story' };
-      if (size === 'square') return { width: 1080, height: 1080, label: 'square' };
+      // Keep one simple default size for users: portrait share card.
+      // The old shareImageSize setting can remain in saved data without affecting the UI.
       return { width: 1080, height: 1350, label: 'portrait' };
     }
 
@@ -737,40 +833,40 @@ ${message}`;
 
       if (template === 'minimal') {
         return {
-          page: '#f7f3eb',
-          pageGlowA: 'rgba(145,168,113,0.10)',
-          pageGlowB: 'rgba(222,189,146,0.09)',
-          card: '#fffdf9',
-          cardSoft: '#f4f1ea',
-          text: '#183d2f',
-          muted: '#6d7c73',
-          line: 'rgba(24,61,47,0.10)',
-          accent: '#456b52',
-          accentSoft: '#e8eee2',
-          warm: '#d7a56f',
-          statCard: '#fffdfa',
-          footerHill1: '#dde5d5',
-          footerHill2: '#cfd9c7',
-          footerHill3: '#becab5'
+          page: '#fbf7ef',
+          pageGlowA: 'rgba(164,118,68,0.06)',
+          pageGlowB: 'rgba(120,96,70,0.05)',
+          card: '#fffefb',
+          cardSoft: '#f8f1e7',
+          text: '#2e2a24',
+          muted: '#867768',
+          line: 'rgba(80,62,44,0.11)',
+          accent: '#9b7046',
+          accentSoft: '#f2e6d7',
+          warm: '#bf8755',
+          statCard: '#fffaf3',
+          footerHill1: '#f0e7da',
+          footerHill2: '#e8dccd',
+          footerHill3: '#ded1c0'
         };
       }
 
       return {
-        page: '#f5f0e8',
-        pageGlowA: 'rgba(137,170,104,0.13)',
-        pageGlowB: 'rgba(230,191,141,0.11)',
-        card: '#fcfaf6',
-        cardSoft: '#f2efe7',
-        text: '#123b2a',
-        muted: '#6e7f74',
-        line: 'rgba(18,59,42,0.10)',
-        accent: '#4f7556',
-        accentSoft: '#e6ecd9',
-        warm: '#d9a56f',
-        statCard: '#fffdf9',
-        footerHill1: '#dfe6d6',
-        footerHill2: '#ced8c5',
-        footerHill3: '#bfcab5'
+        page: '#eaf3df',
+        pageGlowA: 'rgba(73,132,63,0.18)',
+        pageGlowB: 'rgba(162,196,122,0.14)',
+        card: '#f8fff3',
+        cardSoft: '#e3efd8',
+        text: '#103821',
+        muted: '#5f7465',
+        line: 'rgba(16,56,33,0.12)',
+        accent: '#2f6f3e',
+        accentSoft: '#d5eac9',
+        warm: '#c9945b',
+        statCard: '#fbfff8',
+        footerHill1: '#cfe0c2',
+        footerHill2: '#b9d0ab',
+        footerHill3: '#9fbb91'
       };
     }
 
@@ -1128,7 +1224,7 @@ ${message}`;
     }
 
     function downloadShareImage() {
-      if (!latestShareImageDataUrl) renderShareImage();
+      renderShareImage();
       if (!latestShareImageDataUrl) return showToast('Could not create picture');
       const link = document.createElement('a');
       link.href = latestShareImageDataUrl;
@@ -1150,7 +1246,7 @@ ${message}`;
     }
 
     async function shareImage() {
-      if (!latestShareImageDataUrl) renderShareImage();
+      renderShareImage();
       if (!latestShareImageDataUrl) return showToast('Could not create picture');
       const file = dataUrlToFile(latestShareImageDataUrl, `no-contact-progress-${todayKey()}.png`);
 
@@ -1192,12 +1288,12 @@ ${message}`;
       if (!state.checkins.includes(today)) return showToast('Check in first');
       state.reflections[today] = { mood: selectedMood || '', note: document.getElementById('reflectionNote').value.trim(), savedAt: new Date().toISOString() };
       saveState();
-      showToast('Reflection saved');
+      showToast('Reflection saved. See you tomorrow 🌿');
     }
 
     function openEmergency() {
       lastFocusedBeforeEmergency = document.activeElement;
-      document.getElementById('reasonsPreview').textContent = state.reasons || 'No reasons saved yet. Add one or two gentle reasons in Help so they are ready during an urge.';
+      document.getElementById('reasonsPreview').textContent = state.reasons || 'No reasons saved yet. Add one in Help.';
       const modal = document.getElementById('emergencyModal');
       modal.classList.add('open');
       document.getElementById('closeEmergencyBtn').focus();
@@ -1259,6 +1355,7 @@ ${message}`;
     }
 
     async function copyShare() {
+      renderShareText();
       const text = document.getElementById('shareText').textContent;
       try {
         await navigator.clipboard.writeText(text);
@@ -1273,6 +1370,7 @@ ${message}`;
     }
 
     async function nativeShare() {
+      renderShareText();
       const text = document.getElementById('shareText').textContent;
       if (!navigator.share) return showToast('Sharing is not available here');
       try { await navigator.share({ text }); } catch {}
@@ -1309,7 +1407,7 @@ ${message}`;
       reader.readAsText(file);
     }
 
-    document.getElementById('setupForm').addEventListener('submit', e => {
+    onElement('setupForm', 'submit', e => {
       e.preventDefault();
       const name = document.getElementById('setupName').value.trim();
       const priorDays = Number(document.getElementById('setupPriorDays')?.value || 0);
@@ -1346,18 +1444,18 @@ ${message}`;
     document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
     document.querySelectorAll('[data-tab-jump]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tabJump)));
     document.querySelectorAll('[data-open-emergency]').forEach(btn => btn.addEventListener('click', openEmergency));
-    document.getElementById('checkinBtn').addEventListener('click', doCheckin);
-    document.getElementById('moodButtons').addEventListener('click', e => {
+    onElement('checkinBtn', 'click', doCheckin);
+    onElement('moodButtons', 'click', e => {
       const btn = e.target.closest('[data-mood]');
       if (!btn) return;
       selectedMood = btn.dataset.mood;
       renderMoodButtons();
     });
-    document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
-    document.getElementById('prevMonth').addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); });
-    document.getElementById('nextMonth').addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); });
-    document.getElementById('saveReasonsBtn').addEventListener('click', () => { state.reasons = document.getElementById('reasonsText').value.trim(); saveState(); showToast('Reasons saved'); });
-    document.getElementById('saveRelapseBtn').addEventListener('click', () => {
+    onElement('saveReflectionBtn', 'click', saveReflection);
+    onElement('prevMonth', 'click', () => { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(); });
+    onElement('nextMonth', 'click', () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(); });
+    onElement('saveReasonsBtn', 'click', () => { state.reasons = document.getElementById('reasonsText').value.trim(); saveState(); showToast('Reasons saved'); });
+    onElement('saveRelapseBtn', 'click', () => {
       const today = todayKey();
       const what = document.getElementById('relapseWhat').value.trim();
       const trigger = document.getElementById('relapseTrigger').value.trim();
@@ -1378,78 +1476,71 @@ ${message}`;
       saveState();
       showToast('Restart saved gently');
     });
-    document.getElementById('closeEmergencyBtn').addEventListener('click', closeEmergency);
-    document.getElementById('emergencyModal').addEventListener('click', e => { if (e.target.id === 'emergencyModal') closeEmergency(); });
-    document.getElementById('startTimerBtn').addEventListener('click', startTimer);
-    document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
-    document.getElementById('saveUnsentBtn').addEventListener('click', saveUnsent);
-    document.getElementById('urgeIntensity').addEventListener('input', e => document.getElementById('urgeIntensityValue').textContent = e.target.value);
-    document.getElementById('triggerButtons').addEventListener('click', e => {
+    onElement('closeEmergencyBtn', 'click', closeEmergency);
+    onElement('emergencyModal', 'click', e => { if (e.target.id === 'emergencyModal') closeEmergency(); });
+    onElement('startTimerBtn', 'click', startTimer);
+    onElement('resetTimerBtn', 'click', resetTimer);
+    onElement('saveUnsentBtn', 'click', saveUnsent);
+    onElement('urgeIntensity', 'input', e => document.getElementById('urgeIntensityValue').textContent = e.target.value);
+    onElement('triggerButtons', 'click', e => {
       const btn = e.target.closest('[data-trigger]');
       if (!btn) return;
       const trigger = btn.dataset.trigger;
       selectedUrgeTriggers.has(trigger) ? selectedUrgeTriggers.delete(trigger) : selectedUrgeTriggers.add(trigger);
       renderTriggerButtons();
     });
-    document.getElementById('nextGroundingBtn').addEventListener('click', () => {
+    onElement('nextGroundingBtn', 'click', () => {
       groundingStepIndex = (groundingStepIndex + 1) % groundingSteps.length;
       renderGroundingStep();
     });
-    document.getElementById('saveLetterBtn').addEventListener('click', saveLetter);
-    document.getElementById('urgeHistory').addEventListener('click', e => {
+    onElement('saveLetterBtn', 'click', saveLetter);
+    onElement('urgeHistory', 'click', e => {
       const btn = e.target.closest('[data-delete-urge]');
       if (!btn) return;
       state.unsentMessages.splice(Number(btn.dataset.deleteUrge), 1);
       saveState();
       showToast('Urge deleted');
     });
-    document.getElementById('letterList').addEventListener('click', e => {
+    onElement('letterList', 'click', e => {
       const btn = e.target.closest('[data-delete-letter]');
       if (!btn) return;
       state.letters = state.letters.filter(letter => letter.id !== btn.dataset.deleteLetter);
       saveState();
       showToast('Letter deleted');
     });
-    document.getElementById('copyShareBtn').addEventListener('click', copyShare);
-    document.getElementById('nativeShareBtn').addEventListener('click', nativeShare);
-    document.getElementById('refreshShareBtn').addEventListener('click', () => {
-      renderShareText();
-      renderShareImage();
-      showToast('Share content refreshed');
+    document.querySelectorAll('[data-share-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.shareMode = btn.dataset.shareMode;
+        saveState();
+      });
     });
-    document.getElementById('downloadShareImageBtn').addEventListener('click', downloadShareImage);
-    document.getElementById('shareImageBtn').addEventListener('click', shareImage);
-    document.getElementById('refreshShareImageBtn').addEventListener('click', () => {
-      renderShareImage();
-      showToast('Share image refreshed');
-    });
-    document.getElementById('shareImageTemplate').addEventListener('change', e => {
+    onElement('copyShareBtn', 'click', copyShare);
+    onElement('nativeShareBtn', 'click', nativeShare);
+    onElement('downloadShareImageBtn', 'click', downloadShareImage);
+    onElement('shareImageBtn', 'click', shareImage);
+    onElement('shareImageTemplate', 'change', e => {
       state.shareImageTemplate = e.target.value;
       saveState();
+      renderShareImage();
       showToast('Image style updated');
     });
-    document.getElementById('shareImageSize').addEventListener('change', e => {
-      state.shareImageSize = e.target.value;
-      saveState();
-      showToast('Image size updated');
-    });
-    document.getElementById('saveNameBtn').addEventListener('click', () => {
+    onElement('saveNameBtn', 'click', () => {
       const name = document.getElementById('editName').value.trim();
       if (!name) return showToast('Name cannot be empty');
       state.username = name;
       saveState();
       showToast('Username saved');
     });
-    document.getElementById('exportBtn').addEventListener('click', exportData);
-    document.getElementById('importFile').addEventListener('change', e => importData(e.target.files[0]));
-    document.getElementById('manualBackupBtn').addEventListener('click', () => {
+    onElement('exportBtn', 'click', exportData);
+    onElement('importFile', 'change', e => importData(e.target.files[0]));
+    onElement('manualBackupBtn', 'click', () => {
       const key = createLocalBackup('Manual backup');
       if (!key) return showToast('Could not create backup');
       showBackupNotice('Backup created on this device. You can restore the latest backup from here.');
       showToast('Backup created');
     });
-    document.getElementById('restoreLatestBackupBtn').addEventListener('click', restoreLatestBackup);
-    document.getElementById('clearTodayBtn').addEventListener('click', () => {
+    onElement('restoreLatestBackupBtn', 'click', restoreLatestBackup);
+    onElement('clearTodayBtn', 'click', () => {
       if (!confirm('Clear today’s check-in and reflection?')) return;
       createLocalBackup('Before clearing today');
       const today = todayKey();
@@ -1458,7 +1549,7 @@ ${message}`;
       saveState();
       showToast('Today cleared');
     });
-    document.getElementById('resetAllBtn').addEventListener('click', () => {
+    onElement('resetAllBtn', 'click', () => {
       if (!confirm('Reset all saved progress? A backup will be created first, but this cannot be undone if your browser removes saved data.')) return;
       createLocalBackup('Before resetting all data');
       localStorage.removeItem(STORAGE_KEY);
@@ -1484,20 +1575,12 @@ ${message}`;
    ========================================================= */
 
 const DEFAULT_TODAY_PLAN_ITEMS = [
+  'Don’t message them',
   'Don’t check their profile',
-  'Don’t message',
-  'Avoid old photos',
-  'Take a walk',
-  'Journal for 3 minutes',
-  'Sleep earlier'
-];
-
-const DEFAULT_BOUNDARY_ITEMS = [
-  'Did not check their profile',
-  'Did not check stories',
-  'Did not check last seen',
-  'Did not ask friends about them',
-  'Did not reread old chats'
+  'Don’t check stories or last seen',
+  'Don’t reread old messages',
+  'Don’t ask someone about them',
+  'Do one thing that helps me feel calm'
 ];
 
 function ensureNextFeatureState() {
@@ -1519,6 +1602,7 @@ function ensureNextFeatureState() {
   state.emergencyRegion = typeof state.emergencyRegion === 'string' ? state.emergencyRegion : '';
   state.missedDaysResponseKey = typeof state.missedDaysResponseKey === 'string' ? state.missedDaysResponseKey : '';
   state.currentStreakResetDate = isDateKey(state.currentStreakResetDate) ? state.currentStreakResetDate : '';
+  state.darkMode = Boolean(state.darkMode);
 }
 
 function saveNextFeatureState() {
@@ -1547,22 +1631,6 @@ function renderTodayPlan() {
     return `
       <label class="check-item ${done ? 'done' : ''}">
         <input type="checkbox" data-plan-index="${index}" ${done ? 'checked' : ''} />
-        <span>${safeText(item)}</span>
-      </label>
-    `;
-  }).join('');
-}
-
-function renderBoundaryTracker() {
-  ensureNextFeatureState();
-  const wrap = document.getElementById('boundaryList');
-  if (!wrap) return;
-  const checked = new Set(getTodayArrayMap('boundaryChecks'));
-  wrap.innerHTML = DEFAULT_BOUNDARY_ITEMS.map((item, index) => {
-    const done = checked.has(index);
-    return `
-      <label class="check-item ${done ? 'done' : ''}">
-        <input type="checkbox" data-boundary-index="${index}" ${done ? 'checked' : ''} />
         <span>${safeText(item)}</span>
       </label>
     `;
@@ -1613,7 +1681,7 @@ function renderProgressInsights() {
   const wrap = document.getElementById('progressInsights');
   if (!wrap) return;
   const moodValues = Object.values(state.reflections || {}).map(item => item?.mood).filter(Boolean);
-  const checkedBoundaries = Object.values(state.boundaryChecks || {}).reduce((sum, arr) => {
+  const protectionWins = Object.values(state.todayPlanChecks || {}).reduce((sum, arr) => {
     return sum + (Array.isArray(arr) ? arr.length : 0);
   }, 0);
 
@@ -1623,7 +1691,7 @@ function renderProgressInsights() {
     ['Hardest day', getHardestDayOfWeek()],
     ['Average urge', getAverageUrgeIntensity()],
     ['Saved instead of sent', String((state.unsentMessages || []).length)],
-    ['Boundary wins', String(checkedBoundaries)]
+    ['Protection wins', String(protectionWins)]
   ];
 
   wrap.innerHTML = insights.map(([label, value]) => `
@@ -1670,7 +1738,7 @@ function renderContactCost() {
   const preview = document.getElementById('contactCostPreview');
   if (text) text.value = state.contactCost || '';
   if (preview) {
-    preview.textContent = state.contactCost || 'No reminder saved yet. Add what usually happens after contact so your future self can read it during an urge.';
+    preview.textContent = state.contactCost || 'No reminder saved yet.';
     preview.classList.add('sensitive');
   }
 }
@@ -1692,6 +1760,16 @@ function renderPrivacyMode() {
     notice.classList.toggle('hidden', !state.privacyMode);
   }
 }
+
+function renderDarkMode() {
+  ensureNextFeatureState();
+  document.body.classList.toggle('dark-mode', state.darkMode);
+  const btn = document.getElementById('darkModeToggle');
+  if (btn) {
+    btn.textContent = state.darkMode ? 'Disable dark mode' : 'Enable dark mode';
+  }
+}
+
 
 function renderTodayPlanEditor() {
   ensureNextFeatureState();
@@ -1761,7 +1839,7 @@ function renderMissedDaysPrompt() {
 
   if (count) count.textContent = String(info.count);
   if (text) {
-    text.textContent = `You were away for ${info.count} day${info.count === 1 ? '' : 's'}. That’s okay. What happened during ${info.count === 1 ? 'that day' : 'those days'}?`;
+    text.textContent = `You were away for ${info.count} day${info.count === 1 ? '' : 's'}. What happened?`;
   }
   if (form) form.classList.add('hidden');
 }
@@ -1770,11 +1848,11 @@ function renderNextFeatures() {
   ensureNextFeatureState();
   renderMissedDaysPrompt();
   renderTodayPlan();
-  renderBoundaryTracker();
   renderProgressInsights();
   renderSafePeople();
   renderContactCost();
   renderPrivacyMode();
+  renderDarkMode();
   renderTodayPlanEditor();
   renderEmergencyHelpCard();
   renderPolishHelpers();
@@ -1808,28 +1886,9 @@ document.addEventListener('change', event => {
     saveNextFeatureState();
     return;
   }
-
-  const boundaryBox = event.target.closest('[data-boundary-index]');
-  if (boundaryBox) {
-    const index = Number(boundaryBox.dataset.boundaryIndex);
-    const checked = getTodayArrayMap('boundaryChecks');
-    state.boundaryChecks[todayKey()] = boundaryBox.checked
-      ? [...new Set([...checked, index])]
-      : checked.filter(item => item !== index);
-    saveNextFeatureState();
-  }
 });
 
 function bindNextFeatureEvents() {
-  const resetTodayPlanBtn = document.getElementById('resetTodayPlanBtn');
-  if (resetTodayPlanBtn) {
-    resetTodayPlanBtn.addEventListener('click', () => {
-      state.todayPlanChecks[todayKey()] = [];
-      saveNextFeatureState();
-      showToast('Today plan reset');
-    });
-  }
-
   const saveContactCostBtn = document.getElementById('saveContactCostBtn');
   if (saveContactCostBtn) {
     saveContactCostBtn.addEventListener('click', () => {
@@ -1869,6 +1928,15 @@ function bindNextFeatureEvents() {
       state.privacyMode = !state.privacyMode;
       saveNextFeatureState();
       showToast(state.privacyMode ? 'Privacy mode enabled' : 'Privacy mode disabled');
+    });
+  }
+
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', () => {
+      state.darkMode = !state.darkMode;
+      saveNextFeatureState();
+      showToast(state.darkMode ? 'Dark mode enabled' : 'Dark mode disabled');
     });
   }
 

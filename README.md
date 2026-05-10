@@ -217,3 +217,98 @@ When the user records “I contacted them,” visible progress now resets from z
 - current streak, total days, longest streak, and this month become 0
 - relapse/restart note is still saved
 This matches the restart-support expectation when the user previously entered prior no-contact days during setup.
+
+
+## Daily reflection hides after save
+After the user saves today's mood/reflection, the reflection question is hidden for that day.
+It appears again on the next day after the user checks in.
+
+
+## Today protection plan simplification
+The confusing separate “Today plan” and “Social media boundaries” lists were merged into one clearer “Today’s protection plan.”
+The reset button was removed because checklist progress is saved by date and naturally starts unchecked on a new day.
+Old `boundaryChecks` data is left harmlessly for compatibility, but the UI now uses `todayPlanChecks`.
+
+
+## Share page mode toggle
+The Share page now uses one cleaner flow with two modes:
+- Text update
+- Picture card
+
+Both sharing methods are preserved, but only one mode is shown at a time to reduce visual clutter.
+
+
+## Share image size selector removed
+The Share page now keeps picture sharing simpler:
+- users choose only the image style
+- the image size is fixed to portrait 1080×1350
+- old `shareImageSize` saved data remains harmless for compatibility
+
+
+## Share image size listener fix
+Removed the old event listener for the deleted image size dropdown so the Share page loads without console errors.
+
+
+## Safe event binding fix
+Event listeners now use a small safe helper so an optional/missing element cannot crash the whole app.
+This also protects against stale HTML/script mismatches while testing.
+
+
+## Share image style distinction
+Soft green and Minimal cream were made more visually different:
+- Soft green now uses a more clearly green/nature palette.
+- Minimal cream now uses a cleaner cream/brown palette with less green feeling.
+
+
+## Website-wide copy cleanup
+A light copy cleanup reduced repeated helper text across Today, Review, Help, Share, and Settings.
+Important warnings remain for urgent help, backup, reset, and privacy.
+No features, storage keys, or app behavior were changed.
+
+
+## Removed protection plan helper text
+Removed the helper line under Today’s protection plan to reduce visual clutter.
+
+
+## Share refresh buttons removed
+The Share page no longer shows manual refresh buttons.
+Copy/share/download actions now regenerate the latest text or picture automatically before running.
+Changing the picture style also regenerates the preview automatically.
+
+
+## Share copy simplification
+The Share page top heading/subtitle was removed to reduce clutter.
+Share mode labels were shortened to “Text” and “Picture.”
+
+
+## Larger local reminder list
+The Today page reminder list was expanded from 7 to 60 local reminders.
+No API is used. The reminder still rotates automatically by day and works offline.
+The section title was changed from “Daily affirmation” to “Today’s reminder.”
+
+
+## Mood-based share image message
+The picture share card now uses a short message based on today’s saved mood:
+- Calm → I’m choosing peace today.
+- Strong → I stayed steady today.
+- Sad → I’m being gentle with myself today.
+- Anxious → I paused before reacting today.
+- Tempted → I chose not to send the message today.
+- Hopeful → I’m moving forward gently today.
+
+If no mood is saved, the fallback message remains: “I’m choosing peace today.”
+Private notes are still not used in the share image.
+
+
+## Site-wide dark mode
+A dark mode toggle was added to Settings.
+The preference is saved locally in the existing app data and applies to the whole website.
+No storage key was changed.
+
+
+## Dark mode contrast fix
+Improved readability in dark mode:
+- brighter muted/helper text
+- clearer card/input/list backgrounds
+- better button contrast
+- improved calendar, checklist, modal, and Share page contrast

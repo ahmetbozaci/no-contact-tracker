@@ -786,3 +786,251 @@ label.ghost-btn:focus-within {
     align-items: center;
   }
 }
+
+
+.today-plan-list {
+  margin-top: 14px;
+}
+
+
+.share-mode-card {
+  align-self: start;
+}
+
+.share-mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--card-soft);
+  border: 1px solid var(--border);
+}
+
+.share-mode-btn {
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 850;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.share-mode-btn.active {
+  background: white;
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.share-panel.hidden {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .share-mode-toggle {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Site-wide dark mode */
+body.dark-mode {
+  --bg: #121612;
+  --card: #252d24;
+  --card-soft: #1e251e;
+  --text: #fff8ef;
+  --muted: #d5cbbb;
+  --soft: #323b30;
+  --border: rgba(255,255,255,.18);
+  --green: #bde78c;
+  --green-2: #d4f3a5;
+  --green-soft: #34482d;
+  --amber: #ffd08a;
+  --amber-soft: #493824;
+  --blue: #b7daf8;
+  --blue-soft: #253c53;
+  --pink: #ffbdd1;
+  --pink-soft: #4b2c38;
+  --danger: #ffb7b0;
+  --danger-soft: #4a2c29;
+  --shadow: 0 14px 38px rgba(0,0,0,.34);
+}
+
+body.dark-mode header {
+  background: rgba(23,27,22,.86);
+}
+
+body.dark-mode .bottom-nav {
+  background: rgba(31,37,30,.94);
+}
+
+body.dark-mode .card,
+body.dark-mode .setup-card {
+  background: rgba(36,42,34,.92);
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: #1f251e;
+  color: var(--text);
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: rgba(242,238,231,.45);
+}
+
+body.dark-mode .share-mode-btn.active,
+body.dark-mode .milestone-path span,
+body.dark-mode .milestone-card.unlocked .milestone-icon {
+  background: #2b3328;
+}
+
+body.dark-mode .toast {
+  background: #f2eee7;
+  color: #171b16;
+}
+
+body.dark-mode .modal {
+  background: rgba(0,0,0,.66);
+}
+
+body.dark-mode .share-image-preview {
+  background: #11140f;
+}
+
+body.dark-mode .leaf {
+  background: linear-gradient(135deg, var(--green), var(--green-2));
+}
+
+
+/* Dark mode contrast fixes */
+body.dark-mode .subtitle,
+body.dark-mode .field-help,
+body.dark-mode small,
+body.dark-mode .letter-body-preview,
+body.dark-mode .badge-card span,
+body.dark-mode .bottom-nav button,
+body.dark-mode label,
+body.dark-mode .share-mode-btn {
+  color: var(--muted);
+}
+
+body.dark-mode .card,
+body.dark-mode .setup-card,
+body.dark-mode .stat,
+body.dark-mode .badge-card,
+body.dark-mode .list-item,
+body.dark-mode .modal,
+body.dark-mode .share-box,
+body.dark-mode .calendar div,
+body.dark-mode .mood-btn,
+body.dark-mode .icon-btn,
+body.dark-mode .share-mode-btn.active,
+body.dark-mode .milestone-path span {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark-mode .soft-card,
+body.dark-mode .empty-state,
+body.dark-mode .setup-optional,
+body.dark-mode .share-mode-toggle,
+body.dark-mode .urgent-help-number,
+body.dark-mode .grounding-card {
+  background: var(--card-soft);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark-mode .calendar div.checked,
+body.dark-mode .calendar div.today,
+body.dark-mode .mood-btn.active,
+body.dark-mode .nav-btn.active,
+body.dark-mode .bottom-nav button.active,
+body.dark-mode .badge-card.unlocked,
+body.dark-mode .milestone-path span.unlocked {
+  background: var(--green-soft);
+  color: var(--green);
+  border-color: rgba(189,231,140,.34);
+}
+
+body.dark-mode .ghost-btn {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark-mode .soft-btn {
+  background: var(--green-soft);
+  color: var(--green);
+  border-color: rgba(189,231,140,.26);
+}
+
+body.dark-mode .danger-btn {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: rgba(255,183,176,.24);
+}
+
+body.dark-mode .primary-btn {
+  background: #6fa33f;
+  color: #11170f;
+}
+
+body.dark-mode .big-check {
+  background: #6fa33f;
+  color: #11170f;
+}
+
+body.dark-mode .big-check .sub {
+  color: rgba(17,23,15,.72);
+}
+
+body.dark-mode .orb {
+  border-color: rgba(17,23,15,.34);
+}
+
+body.dark-mode .notice {
+  color: var(--text);
+}
+
+body.dark-mode .tag {
+  color: var(--green);
+}
+
+body.dark-mode .dot {
+  background: var(--green);
+}
+
+body.dark-mode .privacy-indicator {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+body.dark-mode .user-chip {
+  color: var(--text);
+  background: var(--card-soft);
+  border-color: var(--border);
+}
+
+body.dark-mode .check-item {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+body.dark-mode .check-item.done {
+  background: var(--green-soft);
+  border-color: rgba(189,231,140,.34);
+}
+
+body.dark-mode .share-image-preview img {
+  background: var(--card-soft);
+}
+
+body.dark-mode .modal-head {
+  color: var(--text);
+}
