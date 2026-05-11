@@ -85,6 +85,21 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       'You can begin again without shame.'
     ];
 
+    const heroReminders = [
+      'Choose peace. Choose growth.',
+      'Protect your peace today.',
+      'One calm choice is enough.',
+      'Be gentle with yourself today.',
+      'Let the urge pass.',
+      'Stay steady today.',
+      'Keep the boundary today.',
+      'Pause before you act.',
+      'You do not need to reach out.',
+      'Your peace matters today.',
+      'Choose calm over curiosity.',
+      'You can get through today.'
+    ];
+
     let state = loadState();
     let selectedMood = null;
     let calendarDate = new Date();
@@ -557,7 +572,7 @@ const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
       const stats = getStats();
       document.getElementById('userChip').textContent = `Hi, ${state.username}`;
       document.getElementById('todayTag').textContent = stats.checkedToday ? 'Already checked in today' : 'Today is a new choice';
-      document.getElementById('dailyQuote').textContent = quotes[Math.floor(Date.now() / 86400000) % quotes.length];
+      document.getElementById('heroReminder').textContent = heroReminders[Math.floor(Date.now() / 86400000) % heroReminders.length];
       document.getElementById('editName').value = state.username;
       document.getElementById('reasonsText').value = state.reasons || '';
       document.getElementById('shareImageTemplate').value = state.shareImageTemplate || 'soft';

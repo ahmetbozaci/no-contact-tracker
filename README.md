@@ -324,3 +324,9 @@ The website visual identity was adjusted to be closer to the promotional image:
 - privacy trust pill on setup
 
 Features and storage remain unchanged.
+
+
+## Hero reminder move
+The separate “Today’s reminder” card was removed from Today.
+The poster-style hero card now keeps “Today is for you.” fixed and rotates a short second line daily.
+A short hero reminder list is used to keep the top card clean and readable.
